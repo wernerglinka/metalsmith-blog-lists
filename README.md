@@ -113,9 +113,9 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 
 [ISC](LICENSE)
 
-[npm-badge]: https://img.shields.io/npm/v/metalsmith-blog-lists.svg
-[npm-url]: https://www.npmjs.com/package/metalsmith-blog-lists
+[npm-badge]: https://img.shields.io/npm/v/wernerglinka/metalsmith-blog-lists.svg
+[npm-url]: https://www.npmjs.com/package/wernerglinka/metalsmith-blog-lists
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true
 [metalsmith-url]: https://metalsmith.io
-[license-badge]: https://img.shields.io/github/license/metalsmith-blog-lists
+[license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-blog-lists
 [license-url]: LICENSE
