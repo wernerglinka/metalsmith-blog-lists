@@ -1,4 +1,4 @@
-# Metalsmith Blog Lists (WIP - NOT FUNCTIONAL AT THIS TIME)
+# Metalsmith Blog Lists (WIP - NO TESTS YET)
 
 A metalsmith plugin to provide various blog lists
 
