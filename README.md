@@ -4,7 +4,7 @@ A metalsmith plugin to provide various blog lists
 
 [![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
 [![npm: version][npm-badge]][npm-url]
-[![license: MIT][license-badge]][license-url]
+[![license: ISC][license-badge]][license-url]
 
 **This plugin requires all blogposts to be located in** `/blog` **of the content directory.**
 
@@ -67,7 +67,8 @@ const blogLists = require('metalsmith-blog-lists')
 metalsmith.use(blogLists({  
   latestQuantity: 4,
   featuredQuantity: 2,
-  featuredPostOrder: "desc"
+  featuredPostOrder: "desc",
+  fileExtension: ".md.njk"
 }))
 ```
 
