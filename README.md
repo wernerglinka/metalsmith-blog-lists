@@ -9,7 +9,7 @@ A metalsmith plugin to provide various blog lists
 **This plugin requires all blogposts to be located in** `/blog` **of the content directory.**
 
 ## Features
-The plugin adds the following lists to the metadata so enable various blog widgets on any page.
+The plugin adds the following lists to the metadata to enable various blog widgets on any page.
 - All Blogs
 - Recent Blogs
 - Featured Blogs
@@ -25,16 +25,16 @@ The following data is available for each blogpost:
 The lists may be used to show all blog posts by a particular author.
 
 ### All Blog Posts
-The plugin provides the array `allSortedBlogPosts` sorted by date. It can be used when the whole list of blog posts is not available like when using pagination, NOT all blog posts will be available on a paginated page.
+The plugin provides array `allSortedBlogPosts`, sorted by date. It can be used when the whole list of blog posts is not available, for example, when using pagination, NOT all blog posts are available on a paginated page.
 
 ### Latest Blogs
-The plugin provides the array `latestBlogPosts`. The number of blog posts listed is determined by option `latestQuantity`.
+The plugin provides array `latestBlogPosts`. The number of blog posts listed is determined by option `latestQuantity`.
 
 ### Featured Blogs
-The plugin provides the array `featuredBlogPosts`. Blog posts can specify in their Frontmatter if the post should be listed and what position it should have in the list.
+The plugin provides array `featuredBlogPosts`. Blog posts can specify, in their Frontmatter, that the post be listed and in what position of the list.
 
 ### Annualized Blogs List
-The plugin provides the associative array `annualizedBlogPosts*`. All blog posts are listed by their creation year.
+The plugin provides an associative array `annualizedBlogPosts`. All blog posts are listed by their creation year.
 
 ## Installation
 
@@ -78,6 +78,7 @@ You can pass options to metalsmith-blog-lists with the Javascript API or CLI. Th
 - latestQuantity: optional. The number of blogposts to display. The default is 3.
 - featuredQuantity: optional. The number of featured blogposts to display. The default is 3.
 - featuredPostOrder: optional. The order in which featured blogposts are displayed. The default is "desc".
+- fileExtension: optional. The default is `.md`.
 
 ### Debug
 
@@ -98,7 +99,8 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
       "@metalsmith/metalsmith-blog-lists": {
         "latestQuantity": 4,
         "featuredQuantity": 2,
-        "featuredPostOrder": "desc"
+        "featuredPostOrder": "desc",
+        "fileExtension": ".md.njk"
       }
     }
   ]
