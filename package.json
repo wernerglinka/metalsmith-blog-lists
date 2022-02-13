@@ -23,7 +23,7 @@
     "test": "test"
   },
   "author": "Werner Glinka (https://glinka.co)",
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/wernerglinka/metalsmith-blog-lists/issues"
   },
