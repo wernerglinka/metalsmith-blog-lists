@@ -56,7 +56,7 @@ For blogs intended to be featured, add the following fields to their frontmatter
 ---
 featuredPost: true
 featuredPostOrder: <integer>
-___
+---
 ```
 
 Pass `metalsmith-blog-lists` to `metalsmith.use` :
@@ -69,7 +69,7 @@ metalsmith.use(blogLists({
   featuredQuantity: 2,
   featuredPostOrder: "desc",
   fileExtension: ".md.njk",
-  blogDirectoryName: "./blog"
+  blogDirectoryName: "blog"
 }))
 ```
 ## Examples 
