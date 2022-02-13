@@ -71,6 +71,36 @@ metalsmith.use(blogLists({
   fileExtension: ".md.njk"
 }))
 ```
+## Examples 
+_Using a Nunjucks template_ 
+### Display an annualized blog archive
+```js
+{% for theYear in annualizedBlogPosts %}
+  {{theYear.year}}
+  <ul>
+  {% for post in theYear.posts %}
+    <li>
+      <a href="/{{post.path}}">{{post.title}}</a>
+      <p>{{post.date}}</p>
+      <p>{{post.author}}</p>
+    </li>
+  {% endfor %}
+  </ul>
+{% endfor %}
+```
+### Display a featured blog list
+```js
+<ul>
+  {% for post in featuredBlogPosts %}
+  <li>
+    <a href="/{{post.path}}">{{post.title}}</a>
+    <p>{{post.date | blogDate}}
+    <p>{{post.author}}</p>
+  </li>
+  {% endfor%}
+</ul>
+```
+
 
 ### Options
 
