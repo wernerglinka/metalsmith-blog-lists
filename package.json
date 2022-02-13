@@ -29,7 +29,11 @@
   },
   "homepage": "https://github.com/wernerglinka/metalsmith-blog-lists#readme",
   "dependencies": {
-    "debug": "^4.3.3"
+    "@metalsmith/layouts": "^2.4.0",
+    "chai": "^4.3.6",
+    "debug": "^4.3.3",
+    "jstransformer-nunjucks": "^1.0.0",
+    "metalsmith-in-place": "^4.4.2"
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",

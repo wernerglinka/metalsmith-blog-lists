@@ -1,4 +1,4 @@
-# Metalsmith Blog Lists (WIP - NO TESTS YET)
+# Metalsmith Blog Lists
 
 A metalsmith plugin to provide various blog lists
 
@@ -6,7 +6,7 @@ A metalsmith plugin to provide various blog lists
 [![npm: version][npm-badge]][npm-url]
 [![license: ISC][license-badge]][license-url]
 
-**This plugin requires all blogposts to be located in** `/blog` **of the content directory.**
+**This plugin requires all blogposts to be located in** `blog/` **of the content directory.**
 
 ## Features
 The plugin adds the following lists to the metadata to enable various blog widgets on any page.
@@ -68,7 +68,8 @@ metalsmith.use(blogLists({
   latestQuantity: 4,
   featuredQuantity: 2,
   featuredPostOrder: "desc",
-  fileExtension: ".md.njk"
+  fileExtension: ".md.njk",
+  blogDirectoryName: "./blog"
 }))
 ```
 ## Examples 
@@ -105,10 +106,11 @@ _Using a Nunjucks template_
 ### Options
 
 You can pass options to metalsmith-blog-lists with the Javascript API or CLI. The options are:
-- latestQuantity: optional. The number of blogposts to display. The default is 3.
-- featuredQuantity: optional. The number of featured blogposts to display. The default is 3.
-- featuredPostOrder: optional. The order in which featured blogposts are displayed. The default is "desc".
-- fileExtension: optional. The default is `.md`.
+- **latestQuantity**: optional. The number of blogposts to display. The default is 3.
+- **featuredQuantity**: optional. The number of featured blogposts to display. The default is 3.
+- **featuredPostOrder**: optional. The order in which featured blogposts are displayed. The default is "desc".
+- **fileExtension**: optional. The blogpost file extension. The default is `.md`.
+- **blogDirectoryName**: optional. The blogpost directory must be in the Metalsmith source directory.The default is `blog`
 
 ### Debug
 
@@ -130,7 +132,8 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
         "latestQuantity": 4,
         "featuredQuantity": 2,
         "featuredPostOrder": "desc",
-        "fileExtension": ".md.njk"
+        "fileExtension": ".md.njk",
+        "blogDirectoryName": "blog"
       }
     }
   ]
