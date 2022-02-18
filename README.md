@@ -54,8 +54,8 @@ yarn add metalsmith-blog-lists
 For blogs intended to be featured, add the following fields to their frontmatter:
 ```yaml
 ---
-featuredPost: true
-featuredPostOrder: <integer>
+featuredBlogpost: true
+featuredBlogpostOrder: <integer>
 ---
 ```
 
@@ -67,7 +67,7 @@ const blogLists = require('metalsmith-blog-lists')
 metalsmith.use(blogLists({  
   latestQuantity: 4,
   featuredQuantity: 2,
-  featuredPostOrder: "desc",
+  featuredPostSortOrder: "desc",
   fileExtension: ".md.njk",
   blogDirectoryName: "blog"
 }))
@@ -108,7 +108,7 @@ _Using a Nunjucks template_
 You can pass options to metalsmith-blog-lists with the Javascript API or CLI. The options are:
 - **latestQuantity**: optional. The number of blogposts to display. The default is 3.
 - **featuredQuantity**: optional. The number of featured blogposts to display. The default is 3.
-- **featuredPostOrder**: optional. The order in which featured blogposts are displayed. The default is "desc".
+- **featuredPostSortOrder**: optional. The order in which featured blogposts are displayed. The default is "desc".
 - **fileExtension**: optional. The blogpost file extension. The default is `.md`.
 - **blogDirectoryName**: optional. The blogpost directory must be in the Metalsmith source directory.The default is `blog`
 
@@ -131,7 +131,7 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
       "@metalsmith/metalsmith-blog-lists": {
         "latestQuantity": 4,
         "featuredQuantity": 2,
-        "featuredPostOrder": "desc",
+        "featuredPostSortOrder": "desc",
         "fileExtension": ".md.njk",
         "blogDirectoryName": "blog"
       }
