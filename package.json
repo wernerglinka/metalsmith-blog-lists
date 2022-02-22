@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "description": "A Metalsmith plugin to add blog lists to metadata.",
   "keywords": [
-    "~core-plugin~",
+    "metalsmith-blog-lists",
     "metalsmith-plugin",
     "metalsmith",
     "static-site"
