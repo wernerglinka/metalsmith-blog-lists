@@ -1,0 +1,69 @@
+{
+  "name": "metalsmith-blog-lists",
+  "version": "1.4.0",
+  "description": "A Metalsmith plugin to add blog lists to metadata.",
+  "keywords": [
+    "metalsmith-blog-lists",
+    "metalsmith-plugin",
+    "metalsmith",
+    "static-site"
+  ],
+  "main": "lib/index.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wernerglinka/metalsmith-blog-lists.git"
+  },
+  "files": [
+    "lib",
+    "CHANGELOG.md"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "author": "Werner Glinka (https://glinka.co)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wernerglinka/metalsmith-blog-lists/issues"
+  },
+  "homepage": "https://github.com/wernerglinka/metalsmith-blog-lists#readme",
+  "dependencies": {
+    "debug": "^4.3.4"
+  },
+  "devDependencies": {
+    "@metalsmith/layouts": "^2.7.0",
+    "auto-changelog": "^2.4.0",
+    "chai": "^5.0.3",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-node": "^11.1.0",
+    "jstransformer-nunjucks": "^1.2.0",
+    "metalsmith": "^2.6.2",
+    "metalsmith-in-place": "^4.4.2",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "prettier": "^3.2.4",
+    "release-it": "17.0.3"
+  },
+  "peerDependencies": {
+    "metalsmith": "^2.5.1"
+  },
+  "scripts": {
+    "changelog": "auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)'",
+    "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
+    "format": "prettier --write \"**/*.{yml,md,js,json}\"",
+    "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
+    "lint": "eslint --fix .",
+    "lint:check": "eslint --fix-dry-run .",
+    "release": "release-it .",
+    "test": "nyc mocha"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
