@@ -19,7 +19,7 @@
     "release": true,
     "repo": "wernerglinka/metalsmith-blog-lists",
     "releaseName": "metalsmith-blog-lists ${version}",
-    "tokenRef": false,
+    "tokenRef": "GITHUB_TOKEN",
     "assets": ["metalsmith-blog-lists-${version}.tgz"]
   }
 }
