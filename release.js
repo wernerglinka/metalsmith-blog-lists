@@ -58,18 +58,32 @@ const dryRun = args.includes('--dry-run');
 // Add GitHub token to release-it call directly via arguments
 const releaseItArgs = dryRun ? ['.', '--dry-run'] : ['.'];
 
-// Check token format
+// Check token format and validity
 const token = process.env.GITHUB_TOKEN;
-console.log('Token format check:');
-console.log(`- Token length: ${token.length}`);
-console.log(`- Token starts with: ${token.substring(0, 7)}...`);
 
-// Modify GitHub token from 'ghp_xxx' to 'github_pat_xxx' if needed 
-// Some tokens need the 'token ' prefix for the GitHub API
-const formattedToken = token.startsWith('ghp_') ? `token ${token}` : token;
+// IMPORTANT: This is the critical check - if the token has spaces or is malformed, fix it
+let cleanToken = token.trim();
+// Remove any quotes if they were accidentally included
+if ((cleanToken.startsWith('"') && cleanToken.endsWith('"')) || 
+    (cleanToken.startsWith("'") && cleanToken.endsWith("'"))) {
+  cleanToken = cleanToken.substring(1, cleanToken.length - 1);
+  console.log('Warning: Removed quotes from token - this may have been the issue');
+}
+
+console.log('Token format check:');
+console.log(`- Token length: ${cleanToken.length}`);
+console.log(`- Token starts with: ${cleanToken.substring(0, 7)}...`);
+
+if (cleanToken.length < 30) {
+  console.error('ERROR: Token appears to be too short to be valid!');
+  process.exit(1);
+}
+
+// Set the GitHub token back in the environment with the cleaned version
+process.env.GITHUB_TOKEN = cleanToken;
 
 // Pass arguments to release-it
-releaseItArgs.push('--github.token', formattedToken);
+releaseItArgs.push('--github.token', cleanToken);
 
 // Log the command (but don't show the full token)
 const safeArgs = [...releaseItArgs];
