@@ -61,8 +61,13 @@ const releaseItArgs = dryRun ? ['.', '--dry-run'] : ['.'];
 // Check token format and validity
 const token = process.env.GITHUB_TOKEN;
 
-// IMPORTANT: This is the critical check - if the token has spaces or is malformed, fix it
-let cleanToken = token.trim();
+// IMPORTANT: This is the critical check - if the token has spaces, linebreaks, or is malformed, fix it
+let cleanToken = token.trim().replace(/[\r\n]+/g, '');
+console.log('Checking for line breaks in token...');
+if (token.includes('\n') || token.includes('\r')) {
+  console.log('WARNING: Found linebreak in token - removing it (this was likely the issue!)');
+}
+
 // Remove any quotes if they were accidentally included
 if ((cleanToken.startsWith('"') && cleanToken.endsWith('"')) || 
     (cleanToken.startsWith("'") && cleanToken.endsWith("'"))) {
