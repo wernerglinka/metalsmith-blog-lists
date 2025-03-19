@@ -66,7 +66,7 @@ function initMetalsmithBlogLists( options ) {
     let latestBlogPosts = [];
     let temp;
 
-    Object.keys( files ).forEach( function ( file ) {
+    Object.keys( files ).forEach( ( file ) => {
       const thisFile = files[ file ];
 
       // we only look at blog posts
@@ -113,11 +113,11 @@ function initMetalsmithBlogLists( options ) {
     } );
 
     // arrays are build, now sort them
-    allSortedBlogPosts.sort( function ( a, b ) {
+    allSortedBlogPosts.sort( ( a, b ) => {
       return a.date.getTime() - b.date.getTime();
     } );
 
-    featuredBlogPosts.sort( function ( a, b ) {
+    featuredBlogPosts.sort( ( a, b ) => {
       return a.order - b.order;
     } );
     
@@ -138,11 +138,11 @@ function initMetalsmithBlogLists( options ) {
     // For ascending order (asc), keep current sort (low to high = 1, 2, 3)
     // For descending order (desc), we need to reverse (high to low = 3, 2, 1)
     if (sortOrder === 'asc') {
-      if (options.debugEnabled) debug('Using ascending sort order (low to high = 1, 2, 3)');
+      if (options.debugEnabled) {debug('Using ascending sort order (low to high = 1, 2, 3)');}
       // Already in ascending order (low to high), so no change needed
     } else {
       // Default is descending order (high to low)
-      if (options.debugEnabled) debug('Using descending sort order (high to low = 3, 2, 1)');
+      if (options.debugEnabled) {debug('Using descending sort order (high to low = 3, 2, 1)');}
       featuredBlogPosts.reverse();
     }
     
@@ -156,7 +156,7 @@ function initMetalsmithBlogLists( options ) {
     const blogYears = [];
     let postYear;
 
-    allSortedBlogPosts.forEach( function ( post, index ) {
+    allSortedBlogPosts.forEach( ( post, _index ) => {
       const d = new Date( post.date );
       // we use getUTCFullYear so a January 1 date will attributed to the correct year
       postYear = d.getUTCFullYear().toString();
@@ -165,9 +165,9 @@ function initMetalsmithBlogLists( options ) {
     } );
 
     const yearArrayKeys = new Set( blogYears );
-    yearArrayKeys.forEach( function ( year ) {
+    yearArrayKeys.forEach( ( year ) => {
       const temp = [];
-      allSortedBlogPosts.forEach( function ( post, index ) {
+      allSortedBlogPosts.forEach( ( post, _index ) => {
         const d = new Date( post.date );
         // we use getUTCFullYear so a January 1 date will attributed to the correct year
         postYear = d.getUTCFullYear().toString();
@@ -183,7 +183,7 @@ function initMetalsmithBlogLists( options ) {
     } );
 
     // Sort annualizedBlogPosts by newest year first
-    annualizedBlogPosts.sort( function ( a, b ) {
+    annualizedBlogPosts.sort( ( a, b ) => {
       a = a.year;
       b = b.year;
       return a > b ? -1 : ( a < b ? 1 : 0 );
@@ -194,10 +194,10 @@ function initMetalsmithBlogLists( options ) {
 
     // Add to metalsmith.metadata for global access
     const metadata = metalsmith.metadata();
-    metadata[ 'latestBlogPosts' ] = latestBlogPosts;
-    metadata[ 'featuredBlogPosts' ] = featuredBlogPosts;
-    metadata[ 'allSortedBlogPosts' ] = allSortedBlogPosts;
-    metadata[ 'annualizedBlogPosts' ] = annualizedBlogPosts;
+    metadata.latestBlogPosts = latestBlogPosts;
+    metadata.featuredBlogPosts = featuredBlogPosts;
+    metadata.allSortedBlogPosts = allSortedBlogPosts;
+    metadata.annualizedBlogPosts = annualizedBlogPosts;
 
     // update metadata
     metalsmith.metadata( metadata );

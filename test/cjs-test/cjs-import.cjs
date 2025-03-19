@@ -10,7 +10,7 @@ assert.strictEqual(typeof instance, 'function', 'Plugin should export a function
 
 // Return success message when run directly
 if (require.main === module) {
-  console.log('CommonJS import test passed!');
+  // Test passed if we reached here
 }
 
 module.exports = {
