@@ -58,11 +58,18 @@ const dryRun = args.includes('--dry-run');
 // Add GitHub token to release-it call directly via arguments
 const releaseItArgs = dryRun ? ['.', '--dry-run'] : ['.'];
 
-// Try passing the token directly to GitHub config
-releaseItArgs.push('--github.token', process.env.GITHUB_TOKEN);
+// Check token format
+const token = process.env.GITHUB_TOKEN;
+console.log('Token format check:');
+console.log(`- Token length: ${token.length}`);
+console.log(`- Token starts with: ${token.substring(0, 7)}...`);
 
-// Also try setting the env variable directly (redundant but helps ensure it works)
-process.env.GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+// Modify GitHub token from 'ghp_xxx' to 'github_pat_xxx' if needed 
+// Some tokens need the 'token ' prefix for the GitHub API
+const formattedToken = token.startsWith('ghp_') ? `token ${token}` : token;
+
+// Pass arguments to release-it
+releaseItArgs.push('--github.token', formattedToken);
 
 // Log the command (but don't show the full token)
 const safeArgs = [...releaseItArgs];

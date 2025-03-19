@@ -25,6 +25,10 @@ if (!token.match(/^ghp_[a-zA-Z0-9]{36}$/)) {
   console.warn('Token format warning: Token does not match expected format (should be ghp_XXXXXXXXXX...)');
 }
 
+// Format token correctly - for GitHub API, typically needs 'token ' prefix
+const formattedToken = token.startsWith('ghp_') ? `token ${token}` : token;
+console.log(`Using authorization header: ${formattedToken.substring(0, 12)}...`);
+
 // Test the token with a simple API request
 const options = {
   hostname: 'api.github.com',
@@ -32,7 +36,7 @@ const options = {
   method: 'GET',
   headers: {
     'User-Agent': 'GitHub-Token-Test',
-    'Authorization': `token ${token}`
+    'Authorization': formattedToken
   }
 };
 
