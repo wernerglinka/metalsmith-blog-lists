@@ -44,45 +44,27 @@ describe('metalsmith-blog-lists', function() {
     strictEqual(metadata.hasOwnProperty('annualizedBlogPosts'), true, 'Should have annualizedBlogPosts in metadata');
   });
   
-  // Test option normalization with different directory settings
-  it('should properly normalize blogDirectory and blogDirectoryName options', function(done) {
-    // Test with blogDirectory only
+  // Test option normalization
+  it('should properly normalize blogDirectory path format', function(done) {
+    // Test with directory path without ./ prefix
     const instance1 = plugin({ blogDirectory: 'articles' });
     const files1 = { 'articles/post1.md': { date: '2022-01-01', title: 'Test' } };
     const metadata1 = {};
     const metalsmithMock1 = { metadata: function() { return metadata1; } };
     
     instance1(files1, metalsmithMock1, () => {
-      // blogDirectoryName should be set correctly based on blogDirectory
-      strictEqual(metadata1.allSortedBlogPosts.length, 1, 'Should find post with blogDirectory option');
+      // Should normalize path and find the post
+      strictEqual(metadata1.allSortedBlogPosts.length, 1, 'Should find post with normalized directory path');
       
-      // Test with blogDirectoryName only
-      const instance2 = plugin({ blogDirectoryName: 'posts' });
+      // Test with trailing slash
+      const instance2 = plugin({ blogDirectory: './posts/' });
       const files2 = { 'posts/post1.md': { date: '2022-01-01', title: 'Test' } };
       const metadata2 = {};
       const metalsmithMock2 = { metadata: function() { return metadata2; } };
       
       instance2(files2, metalsmithMock2, () => {
-        strictEqual(metadata2.allSortedBlogPosts.length, 1, 'Should find post with blogDirectoryName option');
-        
-        // Test with both options provided
-        const instance3 = plugin({ 
-          blogDirectory: 'content',
-          blogDirectoryName: './different'
-        });
-        const files3 = { 
-          'content/post1.md': { date: '2022-01-01', title: 'Content Post' },
-          'different/post2.md': { date: '2022-01-02', title: 'Different Post' }
-        };
-        const metadata3 = {};
-        const metalsmithMock3 = { metadata: function() { return metadata3; } };
-        
-        instance3(files3, metalsmithMock3, () => {
-          // The test is passing if we find at least one post (we expect to find only one currently)
-          // In the future we'll improve to find both directories
-          strictEqual(metadata3.allSortedBlogPosts.length >= 1, true, 'Should find at least one post');
-          done();
-        });
+        strictEqual(metadata2.allSortedBlogPosts.length, 1, 'Should find post when blog directory has trailing slash');
+        done();
       });
     });
   });
@@ -111,7 +93,7 @@ describe('metalsmith-blog-lists', function() {
       .use(plugin({
         latestQuantity: 4,
         fileExtension: ".html",
-        blogDirectoryName: "blog"
+        blogDirectory: "./blog"
       }))
       .use(layouts({
         transform: 'nunjucks',
@@ -135,7 +117,7 @@ describe('metalsmith-blog-lists', function() {
         featuredQuantity: 3,
         featuredPostOrder: "desc",
         fileExtension: ".html",
-        blogDirectoryName: "blog"
+        blogDirectory: "./blog"
       }))
       .use(layouts({
         transform: 'nunjucks',
@@ -171,7 +153,7 @@ describe('metalsmith-blog-lists', function() {
         featuredQuantity: 3,
         featuredPostOrder: "desc",
         fileExtension: ".html",
-        blogDirectoryName: "blog"
+        blogDirectory: "./blog"
       }))
       .use((files, metalsmith, done) => {
         // Directly check the metadata instead of relying on the template
@@ -285,7 +267,7 @@ describe('metalsmith-blog-lists', function() {
     metalsmith(fixture('annualBlogList'))
       .use(plugin({
         fileExtension: ".html",
-        blogDirectoryName: "blog"
+        blogDirectory: "./blog"
       }))
       .use(layouts({
         transform: 'nunjucks',
@@ -307,7 +289,7 @@ describe('metalsmith-blog-lists', function() {
     metalsmith(fixture('allBlogsList'))
       .use(plugin({
         fileExtension: ".html",
-        blogDirectoryName: "blog"
+        blogDirectory: "./blog"
       }))
       .use(layouts({
         transform: 'nunjucks',
@@ -353,7 +335,7 @@ describe('metalsmith-blog-lists', function() {
     
     // Create plugin with the new blogDirectory option
     const pluginInstance = plugin({
-      blogDirectory: 'articles'
+      blogDirectory: './articles'
     });
     
     // Run plugin on mock data
@@ -367,8 +349,8 @@ describe('metalsmith-blog-lists', function() {
     });
   });
   
-  // Test explicit featuredPostSortOrder option (should override featuredPostOrder)
-  it('should respect featuredPostSortOrder over featuredPostOrder', function(done) {
+  // Test featuredPostOrder option
+  it('should respect featuredPostOrder setting', function(done) {
     // Create mock files with order
     const files = {
       './blog/test-post1.html': {
@@ -400,17 +382,16 @@ describe('metalsmith-blog-lists', function() {
       metadata: function() { return metadata; }
     };
     
-    // Create plugin with conflicting settings - featuredPostSortOrder should take precedence
+    // Create plugin with ascending order setting
     const pluginInstance = plugin({
-      featuredPostOrder: 'desc',
-      featuredPostSortOrder: 'asc'
+      featuredPostOrder: 'asc'
     });
     
     // Run plugin on mock data
     pluginInstance(files, metalsmithMock, (err) => {
       if (err) return done(err);
       
-      // Should be sorted in ascending order (1, 2, 3) due to featuredPostSortOrder: 'asc'
+      // Should be sorted in ascending order (1, 2, 3)
       strictEqual(metadata.featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
       strictEqual(metadata.featuredBlogPosts[0].order, 1, 'First post should have order 1');
       strictEqual(metadata.featuredBlogPosts[1].order, 2, 'Second post should have order 2');

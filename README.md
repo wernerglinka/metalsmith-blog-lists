@@ -6,7 +6,6 @@ A metalsmith plugin to provide various blog lists
 [![npm: version][npm-badge]][npm-url]
 [![license: ISC][license-badge]][license-url]
 
-**This plugin requires all blogposts to be located in** `blog/` **of the content directory.**
 
 ## Features
 The plugin adds the following lists to the metadata to enable various blog widgets on any page.
@@ -61,15 +60,31 @@ featuredBlogpostOrder: <integer>
 
 Pass `metalsmith-blog-lists` to `metalsmith.use` :
 
+### ESM (ES Modules)
+
 ```js
-const blogLists = require('metalsmith-blog-lists')
+import blogLists from 'metalsmith-blog-lists';
 
 metalsmith.use(blogLists({  
   latestQuantity: 4,
   featuredQuantity: 2,
   featuredPostOrder: "desc",
   fileExtension: ".md.njk",
-  blogDirectoryName: "blog"
+  blogDirectory: "./blog"
+}))
+```
+
+### CommonJS
+
+```js
+const blogLists = require('metalsmith-blog-lists');
+
+metalsmith.use(blogLists({  
+  latestQuantity: 4,
+  featuredQuantity: 2,
+  featuredPostOrder: "desc",
+  fileExtension: ".md.njk",
+  blogDirectory: "./blog"
 }))
 ```
 ## Examples 
@@ -105,13 +120,18 @@ _Using a Nunjucks template_
 
 ### Options
 
-You can pass options to metalsmith-blog-lists with the Javascript API or CLI. The options are:
-- **latestQuantity**: optional. The number of blogposts to display. The default is 3.
-- **featuredQuantity**: optional. The number of featured blogposts to display. The default is 3.
-- **featuredPostOrder**: optional. The order in which featured blogposts are displayed, either "asc" or "desc". The default is "desc".
-- **fileExtension**: optional. The blogpost file extension. The default is `.md`.
-- **blogDirectory**: optional. The name of the directory containing your blog posts. Default is `blog`. This is the preferred option over blogDirectoryName.
-- **blogDirectoryName**: optional. Legacy option, kept for backward compatibility. Specifies the blog post directory with a "./" prefix. Default is `./blog`
+You can pass options to metalsmith-blog-lists with the Javascript API or CLI:
+
+| Option | Description | Default | Required |
+|--------|-------------|---------|----------|
+| **latestQuantity** | The number of blogposts to display in the latest posts list | `3` | No |
+| **featuredQuantity** | The number of featured blogposts to display | `3` | No |
+| **featuredPostOrder** | The order in which featured blogposts are displayed: `"asc"` or `"desc"` | `"desc"` | No |
+| **fileExtension** | The blogpost file extension | `".md"` | No |
+| **blogDirectory** | The path relative to the Metalsmith source directory containing the blog posts (e.g., `"./blog"`, `"./content/blog"`) | `"./blog"` | No |
+| **debugEnabled** | Enable detailed debug logging | `false` | No |
+
+> **Note:** The `blogDirectory` option now supports both root-level blogs (`"./blog"`) and subdirectory blogs (`"./content/blog"`). You should always include the relative path prefix `./`.
 
 ### Debug
 
@@ -134,7 +154,7 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
         "featuredQuantity": 2,
         "featuredPostOrder": "desc",
         "fileExtension": ".md.njk",
-        "blogDirectory": "blog"
+        "blogDirectory": "./blog"
       }
     }
   ]

@@ -1,6 +1,6 @@
 {
   "name": "metalsmith-blog-lists",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A Metalsmith plugin to add blog lists to metadata.",
   "keywords": [
     "metalsmith-blog-lists",
@@ -8,8 +8,13 @@
     "metalsmith",
     "static-site"
   ],
-  "main": "lib/index.js",
   "type": "module",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "exports": {
+    "import": "./lib/index.js",
+    "require": "./lib/index.cjs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wernerglinka/metalsmith-blog-lists.git"
@@ -43,6 +48,7 @@
     "jstransformer-nunjucks": "^1.2.0",
     "metalsmith": "^2.6.3",
     "metalsmith-in-place": "^4.4.2",
+    "microbundle": "^0.15.1",
     "mocha": "^11.1.0",
     "prettier": "^3.5.3",
     "release-it": "18.1.2"

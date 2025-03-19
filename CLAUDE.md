@@ -8,7 +8,7 @@ When starting a new session, run this to ensure the correct Node.js version is u
 source ~/.nvm/nvm.sh && nvm use
 ```
 
-This will load NVM and automatically use the Node.js version specified in the project's .nvmrc file (18.20.4).
+This will load NVM and automatically use the Node.js version specified in the project's .nvmrc file (20.12.1).
 
 ## Common Commands
 
@@ -59,12 +59,12 @@ GITHUB_TOKEN=your_token npm run release
 
 ## Metalsmith Plugin Best Practices
 
-### Project Structure
-- `/src/` - Source code
-- `/lib/` - Built code (ESM and CommonJS versions)
-- `/test/` - Test files
+### Project Structure for Dual Module Packages
+- `/src/` - Source code with dual export syntax
+- `/lib/` - Built code (contains both ESM `.js` and CommonJS `.cjs` versions)
+- `/test/` - Test files including specific tests for both module formats
 
-### Dual Module Support (ESM and CommonJS)
+### Dual Module Support Implementation (ESM and CommonJS)
 - Configure package.json for dual module support:
   ```json
   "type": "module",
@@ -89,6 +89,50 @@ GITHUB_TOKEN=your_token npm run release
     module.exports = myPlugin;
   }
   ```
+- Create dedicated tests for dual module support:
+  - Create a test file for ESM imports (`test/esm-import.mjs`):
+    ```javascript
+    // ESM test file
+    import { strictEqual } from 'node:assert';
+    import plugin from '../lib/index.js';
+    
+    export function testEsmImport() {
+      strictEqual(typeof plugin, 'function', 'Plugin should be a function when imported with ESM');
+      return true;
+    }
+    ```
+  - Create a test file for CommonJS imports (`test/cjs-test/cjs-import.cjs`):
+    ```javascript
+    // CommonJS test file
+    const assert = require('assert');
+    const plugin = require('../../lib/index.cjs');
+    
+    module.exports = {
+      testCjsImport: () => {
+        assert.strictEqual(typeof plugin, 'function', 'Plugin should be a function when imported with CommonJS');
+        return true;
+      }
+    };
+    ```
+  - Create a test runner file that tests both import methods (`test/dual-module-test.mjs`):
+    ```javascript
+    import assert from 'node:assert';
+    import { testEsmImport } from './esm-import.mjs';
+    import { createRequire } from 'node:module';
+    
+    const require = createRequire(import.meta.url);
+    
+    describe('Dual module support', function() {
+      it('should be importable as an ES module', function() {
+        assert.strictEqual(testEsmImport(), true, 'ESM import should work');
+      });
+      
+      it('should be importable as a CommonJS module', function() {
+        const cjsTest = require('./cjs-test/cjs-import.cjs');
+        assert.strictEqual(cjsTest.testCjsImport(), true, 'CommonJS import should work');
+      });
+    });
+    ```
 - ESLint and Prettier configuration:
   - Keep ESLint config in `eslint.config.js` with ESM format
   - Keep Prettier config in `prettier.config.js` with ESM format
