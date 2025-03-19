@@ -69,10 +69,21 @@ if (safeArgs.includes('--github.token')) {
 }
 console.log('Executing release-it with these args:', safeArgs);
 
-// Spawn release-it process with process.env explicitly passed
+// Try passing token without using environment variable
+// This bypasses potential issues with release-it not reading the environment correctly
+const resultEnv = { ...process.env };
+delete resultEnv.GITHUB_TOKEN; // Remove from env since we're passing it explicitly via arg
+
+console.log(`Environment check before spawning:
+- GITHUB_TOKEN in process.env: ${!!process.env.GITHUB_TOKEN}
+- GITHUB_TOKEN first few chars: ${process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.substring(0, 7) : 'not found'}
+- Current directory: ${process.cwd()}
+- release-it path: ${require.resolve('release-it')}`);
+
+// Spawn release-it process
 const result = spawnSync('./node_modules/.bin/release-it', releaseItArgs, { 
   stdio: 'inherit',
-  env: process.env  // Explicitly pass all environment variables
+  env: resultEnv  // Pass environment without GITHUB_TOKEN since we're using --github.token
 });
 
 process.exit(result.status);
