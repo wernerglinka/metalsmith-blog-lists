@@ -1,32 +1,27 @@
-// Main tests
-
-'use strict';
+// ESM test file for Metalsmith plugins
+import { strict as assert } from 'node:assert';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
-import { strictEqual } from 'node:assert';
+import { dirname, resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 import metalsmith from 'metalsmith';
-import plugin from '../lib/index.js';
 import layouts from '@metalsmith/layouts';
-import fs from 'node:fs';
-import path from 'node:path';
 
-// ESM does not currently import JSON modules by default.
-// Ergo we'll JSON.parse the file manually
-const { name } = JSON.parse(fs.readFileSync('./package.json'));
+// Import the plugin from src for direct coverage
+import plugin from '../src/index.js';
 
- 
+// Get current directory and setup path utilities
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const fixture = (path) => resolve(__dirname, 'fixtures', path);
+const file = (path) => readFileSync(fixture(path), 'utf8');
 
-const fixture = path.resolve.bind(path, __dirname, 'fixtures');
+// Get package name from package.json
+const packageJson = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf8'));
+const { name } = packageJson;
 
-function file(_path) {
-  return fs.readFileSync(fixture(_path), 'utf8');
-}
-
-describe('metalsmith-blog-lists', () => {
+describe('metalsmith-blog-lists (ESM)', () => {
   it('should normalize options with defaults when not provided', () => {
     const instance = plugin();
-    strictEqual(typeof instance, 'function', 'Plugin should return a function');
+    assert.strictEqual(typeof instance, 'function', 'Plugin should return a function');
     
     // Run with empty files and metadata to see if defaults are properly applied
     const files = {};
@@ -38,10 +33,10 @@ describe('metalsmith-blog-lists', () => {
     instance(files, metalsmithMock, () => {});
     
     // Check the defaults are applied
-    strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'latestBlogPosts'), true, 'Should have latestBlogPosts in metadata');
-    strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'featuredBlogPosts'), true, 'Should have featuredBlogPosts in metadata');
-    strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'allSortedBlogPosts'), true, 'Should have allSortedBlogPosts in metadata');
-    strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'annualizedBlogPosts'), true, 'Should have annualizedBlogPosts in metadata');
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'latestBlogPosts'), true, 'Should have latestBlogPosts in metadata');
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'featuredBlogPosts'), true, 'Should have featuredBlogPosts in metadata');
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'allSortedBlogPosts'), true, 'Should have allSortedBlogPosts in metadata');
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(metadata, 'annualizedBlogPosts'), true, 'Should have annualizedBlogPosts in metadata');
   });
   
   // Test option normalization
@@ -54,7 +49,7 @@ describe('metalsmith-blog-lists', () => {
     
     instance1(files1, metalsmithMock1, () => {
       // Should normalize path and find the post
-      strictEqual(metadata1.allSortedBlogPosts.length > 0, true, 'Should find post with normalized directory path');
+      assert.strictEqual(metadata1.allSortedBlogPosts.length > 0, true, 'Should find post with normalized directory path');
       
       // Test with trailing slash
       const instance2 = plugin({ blogDirectory: './posts/' });
@@ -63,17 +58,18 @@ describe('metalsmith-blog-lists', () => {
       const metalsmithMock2 = { metadata: function() { return metadata2; } };
       
       instance2(files2, metalsmithMock2, () => {
-        strictEqual(metadata2.allSortedBlogPosts.length > 0, true, 'Should find post when blog directory has trailing slash');
+        assert.strictEqual(metadata2.allSortedBlogPosts.length > 0, true, 'Should find post when blog directory has trailing slash');
         done();
       });
     });
   });
+  
   it('should export a named plugin function matching package.json name', () => {
     const camelCased = name.split('').reduce((str, char, i) => {
       str += name[i - 1] === '-' ? char.toUpperCase() : char === '-' ? '' : char;
       return str;
     }, '');
-    strictEqual(plugin().name, camelCased.replace(/~/g, ''));
+    assert.strictEqual(plugin().name, camelCased.replace(/~/g, ''));
   });
 
   it('should not crash the metalsmith build when using default options', (done) => {
@@ -83,7 +79,7 @@ describe('metalsmith-blog-lists', () => {
         if (err) {
           return done(err);
         }
-        strictEqual(file('default/build/index.html'), file('default/expected/index.html'));
+        assert.strictEqual(file('default/build/index.html'), file('default/expected/index.html'));
         done();
       });
   });
@@ -106,7 +102,7 @@ describe('metalsmith-blog-lists', () => {
         if (err) {
           return done(err);
         }
-        strictEqual(file('latestBlogsList/build/index.html'), file('latestBlogsList/expected/index.html'));
+        assert.strictEqual(file('latestBlogsList/build/index.html'), file('latestBlogsList/expected/index.html'));
         done();
       });
   });
@@ -130,7 +126,7 @@ describe('metalsmith-blog-lists', () => {
         if (err) {
           return done(err);
         }
-        strictEqual(file('featuredBlogList-desc/build/index.html'), file('featuredBlogList-desc/expected/index.html'));
+        assert.strictEqual(file('featuredBlogList-desc/build/index.html'), file('featuredBlogList-desc/expected/index.html'));
         done();
       });
   });
@@ -163,7 +159,7 @@ describe('metalsmith-blog-lists', () => {
         // Check that we have 3 posts with correct order by featuredBlogpostOrder (1, 2, 3)
         try {
           // Test that we have exactly 3 posts
-          strictEqual(featuredPosts.length, 3, 'Should have 3 featured posts');
+          assert.strictEqual(featuredPosts.length, 3, 'Should have 3 featured posts');
           done();
         } catch (e) {
           done(e);
@@ -215,9 +211,9 @@ describe('metalsmith-blog-lists', () => {
       if (err) {return done(err);}
       
       // Check if it processed correctly with debug enabled
-      strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
-      strictEqual(metadata.featuredBlogPosts[0].order, 2, 'First post should have order 2 (desc sort)');
-      strictEqual(metadata.featuredBlogPosts[1].order, 1, 'Second post should have order 1 (desc sort)');
+      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(metadata.featuredBlogPosts[0].order, 2, 'First post should have order 2 (desc sort)');
+      assert.strictEqual(metadata.featuredBlogPosts[1].order, 1, 'Second post should have order 1 (desc sort)');
       done();
     });
   });
@@ -257,7 +253,7 @@ describe('metalsmith-blog-lists', () => {
       if (err) {return done(err);}
       
       // Check if it handled missing order property gracefully
-      strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
       // The post with undefined order should sort correctly (undefined is treated as 0)
       done();
     });
@@ -280,7 +276,7 @@ describe('metalsmith-blog-lists', () => {
         if (err) {
           return done(err);
         }
-        strictEqual(file('annualBlogList/build/index.html'), file('annualBlogList/expected/index.html'));
+        assert.strictEqual(file('annualBlogList/build/index.html'), file('annualBlogList/expected/index.html'));
         done();
       });
   });
@@ -302,7 +298,7 @@ describe('metalsmith-blog-lists', () => {
         if (err) {
           return done(err);
         }
-        strictEqual(file('allBlogsList/build/index.html'), file('allBlogsList/expected/index.html'));
+        assert.strictEqual(file('allBlogsList/build/index.html'), file('allBlogsList/expected/index.html'));
         done();
       });
   });
@@ -343,8 +339,8 @@ describe('metalsmith-blog-lists', () => {
       if (err) {return done(err);}
       
       // Should find posts in the articles directory
-      strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
-      strictEqual(metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts in allSortedBlogPosts');
+      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts in allSortedBlogPosts');
       done();
     });
   });
@@ -392,10 +388,10 @@ describe('metalsmith-blog-lists', () => {
       if (err) {return done(err);}
       
       // Should be sorted in ascending order (1, 2, 3)
-      strictEqual(metadata.featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
-      strictEqual(metadata.featuredBlogPosts[0].order, 1, 'First post should have order 1');
-      strictEqual(metadata.featuredBlogPosts[1].order, 2, 'Second post should have order 2');
-      strictEqual(metadata.featuredBlogPosts[2].order, 3, 'Third post should have order 3');
+      assert.strictEqual(metadata.featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
+      assert.strictEqual(metadata.featuredBlogPosts[0].order, 1, 'First post should have order 1');
+      assert.strictEqual(metadata.featuredBlogPosts[1].order, 2, 'Second post should have order 2');
+      assert.strictEqual(metadata.featuredBlogPosts[2].order, 3, 'Third post should have order 3');
       done();
     });
   });
@@ -458,9 +454,19 @@ describe('metalsmith-blog-lists', () => {
       if (err) {return done(err);}
       
       // Should only have 2 featured posts due to featuredQuantity: 2
-      strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
-      strictEqual(metadata.allSortedBlogPosts.length, 5, 'Should have all 5 blog posts in allSortedBlogPosts');
+      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(metadata.allSortedBlogPosts.length, 5, 'Should have all 5 blog posts in allSortedBlogPosts');
       done();
     });
+  });
+  
+  // Test dual module support
+  describe('Dual module support', () => {
+    it('should be importable as an ES module', () => {
+      assert.strictEqual(typeof plugin, 'function', 'Plugin should be a function when imported with ESM');
+      assert.strictEqual(typeof plugin(), 'function', 'Plugin should return a function when called');
+    });
+
+    // Note: CommonJS test is handled separately in test/cjs-test/cjs-import.cjs
   });
 });

@@ -168,9 +168,58 @@ This project maintains high statement and line coverage for the source code. Cov
 
 Coverage report (from latest test run):
 
-File      | % Stmts | % Branch | % Funcs | % Lines
-----------|---------|----------|---------|--------
-src       | 100 | 96.66 | 100 | 100
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+----------|---------|----------|---------|---------|-------------------
+All files | 99.06 | 87.09 | 100 | 99.06 |
+ index.js | 99.06 | 87.09 | 100 | 99.06 | 214-215
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Author
@@ -187,5 +236,5 @@ src       | 100 | 96.66 | 100 | 100
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-blog-lists
 [license-url]: LICENSE
-[coverage-badge]: https://img.shields.io/badge/coverage-100%25-brightgreen
+[coverage-badge]: https://img.shields.io/badge/coverage-99%25-brightgreen
 [coverage-url]: #test-coverage
