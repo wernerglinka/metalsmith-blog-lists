@@ -39,11 +39,11 @@ function calculateAverageCoverage(files) {
 }
 
 function determineBadgeColor(percentage) {
-  if (percentage >= 90) return 'brightgreen';
-  if (percentage >= 80) return 'green';
-  if (percentage >= 70) return 'yellowgreen';
-  if (percentage >= 60) return 'yellow';
-  if (percentage >= 50) return 'orange';
+  if (percentage >= 90) {return 'brightgreen';}
+  if (percentage >= 80) {return 'green';}
+  if (percentage >= 70) {return 'yellowgreen';}
+  if (percentage >= 60) {return 'yellow';}
+  if (percentage >= 50) {return 'orange';}
   return 'red';
 }
 
