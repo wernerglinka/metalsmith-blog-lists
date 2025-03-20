@@ -44,10 +44,16 @@ The script is integrated into the release process via package.json scripts:
 
 ```json
 "update-coverage": "node scripts/update-coverage-badge.js",
-"prerelease": "npm run update-coverage",
+"prerelease": "npm run update-coverage && git add README.md && git commit -m \"Update coverage badge in README\" || true",
 ```
 
-This ensures the badge is always updated before creating a new release.
+This ensures the badge is always updated before creating a new release. The prerelease script:
+1. Runs the update-coverage script
+2. Automatically adds the README.md to Git staging
+3. Commits the changes with a descriptive message
+4. Uses `|| true` to ensure the process continues even if there's nothing to commit
+
+This approach solves the "Working dir must be clean" error that would otherwise occur when the README is modified right before the release process checks for a clean working directory.
 
 ## Badge Format
 
