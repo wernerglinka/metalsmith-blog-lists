@@ -5,6 +5,7 @@ A metalsmith plugin to provide various blog lists
 [![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
 [![npm: version][npm-badge]][npm-url]
 [![license: ISC][license-badge]][license-url]
+[![codecov][codecov-badge]][codecov-url]
 
 
 ## Features
@@ -175,3 +176,5 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-blog-lists
 [license-url]: LICENSE
+[codecov-badge]: https://codecov.io/gh/wernerglinka/metalsmith-blog-lists/branch/main/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/wernerglinka/metalsmith-blog-lists
