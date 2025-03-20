@@ -138,10 +138,10 @@ async function main() {
     }
     
     // Update coverage report table
-    const reportPattern = /```\nFile\s+\|\s+% Stmts\s+\|\s+% Branch\s+\|\s+% Funcs\s+\|\s+% Lines\n[-|]+\s+\nsrc\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\n```/;
+    const reportPattern = /```\nFile\s+\|\s+% Stmts\s+\|\s+% Branch\s+\|\s+% Funcs\s+\|\s+% Lines\n[-|]+\s+\nsrc(?:\/\*\*)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\n```/;
     
     // Create the report content
-    let newReport = `\`\`\`\nFile      | % Stmts | % Branch | % Funcs | % Lines\n----------|---------|----------|---------|--------\nsrc       | ${srcCoverage.statements} | ${srcCoverage.branches} | ${srcCoverage.functions} | ${srcCoverage.lines}\n`;
+    let newReport = `\`\`\`\nFile      | % Stmts | % Branch | % Funcs | % Lines\n----------|---------|----------|---------|--------\nsrc/**    | ${srcCoverage.statements} | ${srcCoverage.branches} | ${srcCoverage.functions} | ${srcCoverage.lines}\n`;
     
     // Add individual file details if we have them and there's more than one
     if (srcFilesData.length > 1) {
