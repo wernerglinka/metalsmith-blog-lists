@@ -176,5 +176,5 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-blog-lists
 [license-url]: LICENSE
-[codecov-badge]: https://codecov.io/gh/wernerglinka/metalsmith-blog-lists/branch/main/graph/badge.svg
+[codecov-badge]: https://img.shields.io/codecov/c/github/wernerglinka/metalsmith-blog-lists
 [codecov-url]: https://codecov.io/gh/wernerglinka/metalsmith-blog-lists
