@@ -157,29 +157,36 @@ async function main() {
     // Get information about all individual src files if they exist
     const { srcFilesData, srcFileLines } = getSrcFileLines(testOutput);
     
-    // Update coverage report table - use a non-capturing group for the slash
-    const reportPattern = /File\s+\|\s+% Stmts\s+\|\s+% Branch\s+\|\s+% Funcs\s+\|\s+% Lines\n[-|]+\s+\nsrc(?:\/\*\*)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?/;
+    // Look for the Test Coverage section
+    const testCoverageSection = updatedReadme.match(/## Test Coverage\s+([\s\S]*?)(?=\s+##|$)/);
     
-    // Create the report content
-    let newReport = `File      | % Stmts | % Branch | % Funcs | % Lines\n----------|---------|----------|---------|--------\nsrc/**    | ${srcCoverage.statements} | ${srcCoverage.branches} | ${srcCoverage.functions} | ${srcCoverage.lines}`;
+    if (!testCoverageSection) {
+      console.warn('Could not find Test Coverage section in README.md, skipping update');
+      return updatedReadme;
+    }
+    
+    // Create the new coverage report content
+    const newReport = `File      | % Stmts | % Branch | % Funcs | % Lines\n----------|---------|----------|---------|--------\nsrc/**    | ${srcCoverage.statements} | ${srcCoverage.branches} | ${srcCoverage.functions} | ${srcCoverage.lines}`;
     
     // Add individual file details if we have them and there's more than one
-    if (srcFilesData.length > 1) {
-      newReport += srcFileLines;
-    }
+    const fullReport = srcFilesData.length > 1 
+      ? `${newReport}\n${srcFileLines}` 
+      : newReport;
     
-    if (reportPattern.test(updatedReadme)) {
-      updatedReadme = updatedReadme.replace(reportPattern, newReport);
-    } else {
-      // Try an alternative pattern that might match
-      const altReportPattern = /(?:```)?[\s\S]*?File[\s\S]*?[-|]+[\s\S]*?src[\s\S]*?(?:```)?/;
-      if (altReportPattern.test(updatedReadme)) {
-        updatedReadme = updatedReadme.replace(altReportPattern, newReport);
-        process.stderr.write('Updated coverage report table using alternative pattern\n');
-      } else {
-        console.warn('Could not find coverage report table in README.md, skipping update');
-      }
-    }
+    // Create full coverage section content
+    const newCoverageSection = `## Test Coverage
+
+This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
+
+Coverage report (from latest test run):
+
+${fullReport}
+
+`;
+    
+    // Replace the entire Test Coverage section
+    updatedReadme = updatedReadme.replace(/## Test Coverage[\s\S]*?(?=\s+##|$)/, newCoverageSection);
+    process.stderr.write('Updated Test Coverage section in README.md\n');
     
     // Write updated README.md
     await fs.writeFile(readmePath, updatedReadme, 'utf-8');
