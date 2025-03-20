@@ -138,23 +138,21 @@ async function main() {
     }
     
     // Update coverage report table
-    const reportPattern = /```\nFile\s+\|\s+% Stmts\s+\|\s+% Branch\s+\|\s+% Funcs\s+\|\s+% Lines\n[-|]+\s+\nsrc(?:\/\*\*)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\n```/;
+    const reportPattern = /File\s+\|\s+% Stmts\s+\|\s+% Branch\s+\|\s+% Funcs\s+\|\s+% Lines\n[-|]+\s+\nsrc(?:\/\*\*)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?\s+\|\s+\d+(?:\.\d+)?/;
     
     // Create the report content
-    let newReport = `\`\`\`\nFile      | % Stmts | % Branch | % Funcs | % Lines\n----------|---------|----------|---------|--------\nsrc/**    | ${srcCoverage.statements} | ${srcCoverage.branches} | ${srcCoverage.functions} | ${srcCoverage.lines}\n`;
+    let newReport = `File      | % Stmts | % Branch | % Funcs | % Lines\n----------|---------|----------|---------|--------\nsrc/**    | ${srcCoverage.statements} | ${srcCoverage.branches} | ${srcCoverage.functions} | ${srcCoverage.lines}`;
     
     // Add individual file details if we have them and there's more than one
     if (srcFilesData.length > 1) {
       newReport += srcFileLines;
     }
     
-    newReport += `\`\`\``;
-    
     if (reportPattern.test(updatedReadme)) {
       updatedReadme = updatedReadme.replace(reportPattern, newReport);
     } else {
       // Try an alternative pattern that might match
-      const altReportPattern = /```[\s\S]*?File[\s\S]*?src[\s\S]*?```/;
+      const altReportPattern = /(?:```)?[\s\S]*?File[\s\S]*?[-|]+[\s\S]*?src[\s\S]*?(?:```)?/;
       if (altReportPattern.test(updatedReadme)) {
         updatedReadme = updatedReadme.replace(altReportPattern, newReport);
         console.log('Updated coverage report table using alternative pattern');
