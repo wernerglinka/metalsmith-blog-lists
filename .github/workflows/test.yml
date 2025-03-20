@@ -37,7 +37,6 @@ jobs:
     - name: Run tests and generate coverage
       run: npm test
 
-    - name: Upload coverage to Coveralls
-      uses: coverallsapp/github-action@v2
-      with:
-        github-token: ${{ github.token }}
+    # We're using a static badge instead of a service that requires organization access
+    - name: Generate coverage report
+      run: npm run coverage

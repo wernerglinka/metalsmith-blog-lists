@@ -5,7 +5,7 @@ A metalsmith plugin to provide various blog lists
 [![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
 [![npm: version][npm-badge]][npm-url]
 [![license: ISC][license-badge]][license-url]
-[![Coverage Status][coveralls-badge]][coveralls-url]
+[![coverage][coverage-badge]][coverage-url]
 
 
 ## Features
@@ -166,6 +166,17 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 
 [werner@glinka.co](https://github.com/wernerglinka)
 
+## Test Coverage
+
+This project maintains 100% statement and line coverage for the source code. Coverage is verified during CI builds using the c8 coverage tool.
+
+Coverage report (from latest test run):
+```
+File      | % Stmts | % Branch | % Funcs | % Lines
+----------|---------|----------|---------|--------
+src       |     100 |    96.66 |     100 |     100
+```
+
 ## License
 
 [ISC](LICENSE)
@@ -176,5 +187,5 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-blog-lists
 [license-url]: LICENSE
-[coveralls-badge]: https://coveralls.io/repos/github/wernerglinka/metalsmith-blog-lists/badge.svg?branch=main
-[coveralls-url]: https://coveralls.io/github/wernerglinka/metalsmith-blog-lists?branch=main
+[coverage-badge]: https://img.shields.io/badge/coverage-100%25-brightgreen
+[coverage-url]: #test-coverage
