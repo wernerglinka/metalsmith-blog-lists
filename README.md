@@ -41,10 +41,141 @@ The plugin provides an associative array `annualizedBlogPosts`. All blog posts a
 NPM:
 
 ```
+npm install metalsmith-blog-lists
+```
+
+Yarn:
+
+```
+yarn add metalsmith-blog-lists
+```
+
+## Usage
+For blogs intended to be featured, add the following fields to their frontmatter:
+```yaml
+---
+featuredBlogpost: true
+featuredBlogpostOrder: <integer>
+---
+```
+
+Pass `metalsmith-blog-lists` to `metalsmith.use` :
+
+### ESM (ES Modules)
+
+```js
+import blogLists from 'metalsmith-blog-lists';
+
+metalsmith.use(blogLists({  
+  latestQuantity: 4,
+  featuredQuantity: 2,
+  featuredPostOrder: "desc",
+  fileExtension: ".md.njk",
+  blogDirectory: "./blog"
+}))
+```
+
+### CommonJS
+
+```js
+const blogLists = require('metalsmith-blog-lists');
+
+metalsmith.use(blogLists({  
+  latestQuantity: 4,
+  featuredQuantity: 2,
+  featuredPostOrder: "desc",
+  fileExtension: ".md.njk",
+  blogDirectory: "./blog"
+}))
+```
+## Examples 
+_Using a Nunjucks template_ 
+### Display an annualized blog archive
+```js
+{% for theYear in annualizedBlogPosts %}
+  {{theYear.year}}
+  <ul>
+  {% for post in theYear.posts %}
+    <li>
+      <a href="/{{post.path}}">{{post.title}}</a>
+      <p>{{post.date}}</p>
+      <p>{{post.author}}</p>
+    </li>
+  {% endfor %}
+  </ul>
+{% endfor %}
+```
+### Display a featured blog list
+```js
+<ul>
+  {% for post in featuredBlogPosts %}
+  <li>
+    <a href="/{{post.path}}">{{post.title}}</a>
+    <p>{{post.date | blogDate}}
+    <p>{{post.author}}</p>
+  </li>
+  {% endfor%}
+</ul>
+```
+
+
+### Options
+
+You can pass options to metalsmith-blog-lists with the Javascript API or CLI:
+
+| Option | Description | Default | Required |
+|--------|-------------|---------|----------|
+| **latestQuantity** | The number of blogposts to display in the latest posts list | `3` | No |
+| **featuredQuantity** | The number of featured blogposts to display | `3` | No |
+| **featuredPostOrder** | The order in which featured blogposts are displayed: `"asc"` or `"desc"` | `"desc"` | No |
+| **fileExtension** | The blogpost file extension | `".md"` | No |
+| **blogDirectory** | The path relative to the Metalsmith source directory containing the blog posts (e.g., `"./blog"`, `"./content/blog"`) | `"./blog"` | No |
+| **debugEnabled** | Enable detailed debug logging | `false` | No |
+
+> **Note:** The `blogDirectory` option now supports both root-level blogs (`"./blog"`) and subdirectory blogs (`"./content/blog"`). You should always include the relative path prefix `./`.
+
+### Debug
+
+To enable debug logs, set the `DEBUG` environment variable to `metalsmith-blog-lists`:
+
+```
+DEBUG=metalsmith-blog-lists
+```
+
+### CLI usage
+
+To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `plugins` key in your `metalsmith.json` file:
+
+```json
+{
+  "plugins": [
+    {
+      "@metalsmith/metalsmith-blog-lists": {
+        "latestQuantity": 4,
+        "featuredQuantity": 2,
+        "featuredPostOrder": "desc",
+        "fileExtension": ".md.njk",
+        "blogDirectory": "./blog"
+      }
+    }
+  ]
+}
+```
+
+## Test Coverage
+
+This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
+
+Coverage report (from latest test run):
+```
 File      | % Stmts | % Branch | % Funcs | % Lines
 ----------|---------|----------|---------|--------
-src       | 61.64 | 65.62 | 44.82 | 61.64
+src       | 100 | 96.66 | 100 | 100
 ```
+
+## Author
+
+[werner@glinka.co](https://github.com/wernerglinka)
 
 ## License
 
@@ -56,5 +187,5 @@ src       | 61.64 | 65.62 | 44.82 | 61.64
 [metalsmith-url]: https://metalsmith.io
 [license-badge]: https://img.shields.io/github/license/wernerglinka/metalsmith-blog-lists
 [license-url]: LICENSE
-[coverage-badge]: https://img.shields.io/badge/coverage-62%25-yellow
+[coverage-badge]: https://img.shields.io/badge/coverage-100%25-brightgreen
 [coverage-url]: #test-coverage

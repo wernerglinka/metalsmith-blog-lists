@@ -18,11 +18,13 @@ async function main() {
     console.log('Running tests to generate coverage data...');
     const testOutput = execSync('npm test', { encoding: 'utf-8' });
     
-    // Parse the coverage output for src directory
-    const srcCoverageMatch = testOutput.match(/src\s+\|\s+(\d+(?:\.\d+)?)\s+\|\s+(\d+(?:\.\d+)?)\s+\|\s+(\d+(?:\.\d+)?)\s+\|\s+(\d+(?:\.\d+)?)/);
+    // Look specifically for the standalone src directory line (not node_modules/debug/src)
+    const srcLineRegex = /\s+src\s+\|\s+(\d+(?:\.\d+)?)\s+\|\s+(\d+(?:\.\d+)?)\s+\|\s+(\d+(?:\.\d+)?)\s+\|\s+(\d+(?:\.\d+)?)\s+\|/;
+    const srcCoverageMatch = testOutput.match(srcLineRegex);
     
     if (!srcCoverageMatch) {
       console.error('Could not find src coverage data in test output');
+      console.log('Test output:', testOutput);
       process.exit(1);
     }
     
