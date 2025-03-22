@@ -135,7 +135,7 @@ You can pass options to metalsmith-blog-lists with the Javascript API or CLI:
 
 > **Note:** The `blogDirectory` option now supports both root-level blogs (`"./blog"`) and subdirectory blogs (`"./content/blog"`). You should always include the relative path prefix `./`.
 
-### Debug
+## Debug
 
 To enable debug logs, set the `DEBUG` environment variable to `metalsmith-blog-lists`:
 
@@ -166,14 +166,6 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 ## Test Coverage
 
 This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
-
-Coverage report (from latest test run):
-
-File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
-----------|---------|----------|---------|---------|-------------------
-All files | 99.06 | 87.09 | 100 | 99.06 |
- index.js | 99.06 | 87.09 | 100 | 99.06 | 214-215
-
 
 ## Author
 
