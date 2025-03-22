@@ -6,6 +6,7 @@ A metalsmith plugin to provide various blog lists
 [![npm: version][npm-badge]][npm-url]
 [![license: ISC][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
+[![ESM/CommonJS][modules-badge]][npm-url]
 
 
 ## Features
@@ -174,54 +175,6 @@ All files | 99.06 | 87.09 | 100 | 99.06 |
  index.js | 99.06 | 87.09 | 100 | 99.06 | 214-215
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Author
 
 [werner@glinka.co](https://github.com/wernerglinka)
@@ -238,3 +191,4 @@ All files | 99.06 | 87.09 | 100 | 99.06 |
 [license-url]: LICENSE
 [coverage-badge]: https://img.shields.io/badge/coverage-99%25-brightgreen
 [coverage-url]: #test-coverage
+[modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
