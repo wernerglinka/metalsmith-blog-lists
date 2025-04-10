@@ -26,9 +26,9 @@ const defaults = {
  * @param {Options} [options]
  * @returns {Object}
  */
-function normalizeOptions( options ) {
+function normalizeOptions(options) {
   // Start with defaults
-  const result = Object.assign( {}, defaults, options || {} );
+  const result = Object.assign({}, defaults, options || {});
   
   // Ensure blogDirectory has the correct format (starts with ./ and doesn't end with /)
   let dirPath = result.blogDirectory;
@@ -55,19 +55,18 @@ function normalizeOptions( options ) {
  * @param {Options} options - Plugin options
  * @returns {import('metalsmith').Plugin} - Metalsmith plugin function
  */
-function initMetalsmithBlogLists( options ) {
-  options = normalizeOptions( options );
+function initMetalsmithBlogLists(options) {
+  options = normalizeOptions(options);
 
-  return function metalsmithBlogLists( files, metalsmith, done ) {
-
+  return function metalsmithBlogLists(files, metalsmith, done) {
     const featuredBlogPosts = [];
     const allSortedBlogPosts = [];
     const annualizedBlogPosts = [];
     let latestBlogPosts = [];
     let temp;
 
-    Object.keys( files ).forEach( ( file ) => {
-      const thisFile = files[ file ];
+    Object.keys(files).forEach((file) => {
+      const thisFile = files[file];
 
       // we only look at blog posts
       // Remove the ./ prefix from the directory for file path matching
@@ -77,13 +76,13 @@ function initMetalsmithBlogLists( options ) {
         
       // Check all possible directory formats to maximize compatibility
       const isInBlogDirectory = 
-           file.indexOf( `${ options.blogDirectory }/` ) !== -1 || 
-           file.indexOf( `${ blogDirWithoutPrefix }/` ) !== -1 ||
-           file.startsWith( `${ options.blogDirectory }/` ) || 
-           file.startsWith( `${ blogDirWithoutPrefix }/` );
+           file.indexOf(`${options.blogDirectory}/`) !== -1 || 
+           file.indexOf(`${blogDirWithoutPrefix}/`) !== -1 ||
+           file.startsWith(`${options.blogDirectory}/`) || 
+           file.startsWith(`${blogDirWithoutPrefix}/`);
            
       if (isInBlogDirectory) {
-        const filePath = file.replace( options.fileExtension, "" );
+        const filePath = file.replace(options.fileExtension, "");
 
         // assemble a sorted all blogs list
         // this list may be used when the whole list of blog posts is needed to
@@ -92,13 +91,13 @@ function initMetalsmithBlogLists( options ) {
         temp = {
           "title": thisFile.blogTitle || thisFile.title,
           "excerpt": thisFile.excerpt,
-          "date": new Date( thisFile.date ),
+          "date": new Date(thisFile.date),
           "author": thisFile.author,
           "path": filePath,
           "image": thisFile.image,
           "order": thisFile.featuredBlogpostOrder
         };
-        allSortedBlogPosts.push( temp );
+        allSortedBlogPosts.push(temp);
 
         // create the featured blog posts array
         // requires:
@@ -106,20 +105,20 @@ function initMetalsmithBlogLists( options ) {
         //    featuredBlogpostOrder: <integer>
         //    featuredPostOrder:: "asc" | "desc"
         // to be set in the files frontmatter
-        if ( thisFile.featuredBlogpost ) {
-          featuredBlogPosts.push( temp );
+        if (thisFile.featuredBlogpost) {
+          featuredBlogPosts.push(temp);
         }
       }
-    } );
+    });
 
     // arrays are build, now sort them
-    allSortedBlogPosts.sort( ( a, b ) => {
+    allSortedBlogPosts.sort((a, b) => {
       return a.date.getTime() - b.date.getTime();
-    } );
+    });
 
-    featuredBlogPosts.sort( ( a, b ) => {
+    featuredBlogPosts.sort((a, b) => {
       return a.order - b.order;
-    } );
+    });
     
     // Get the sort order (maintain backward compatibility for featuredPostSortOrder)
     const sortOrder = options.featuredPostOrder;
@@ -149,48 +148,48 @@ function initMetalsmithBlogLists( options ) {
     if (options.debugEnabled) {
       debug('Featured blog posts after sorting: %O', featuredBlogPosts);
     }
-    featuredBlogPosts.splice( options.featuredQuantity );
+    featuredBlogPosts.splice(options.featuredQuantity);
 
     // create the yearly archive list from array allSortedBlogPosts
     // get the year from the blog date
     const blogYears = [];
     let postYear;
 
-    allSortedBlogPosts.forEach( ( post, _index ) => {
-      const d = new Date( post.date );
+    allSortedBlogPosts.forEach((post, _index) => {
+      const d = new Date(post.date);
       // we use getUTCFullYear so a January 1 date will attributed to the correct year
       postYear = d.getUTCFullYear().toString();
       // build year array
-      blogYears.push( postYear );
-    } );
+      blogYears.push(postYear);
+    });
 
-    const yearArrayKeys = new Set( blogYears );
-    yearArrayKeys.forEach( ( year ) => {
+    const yearArrayKeys = new Set(blogYears);
+    yearArrayKeys.forEach((year) => {
       const temp = [];
-      allSortedBlogPosts.forEach( ( post, _index ) => {
-        const d = new Date( post.date );
+      allSortedBlogPosts.forEach((post, _index) => {
+        const d = new Date(post.date);
         // we use getUTCFullYear so a January 1 date will attributed to the correct year
         postYear = d.getUTCFullYear().toString();
         // check if this post is in this year
-        if ( year === postYear ) {
-          temp.push( post );
+        if (year === postYear) {
+          temp.push(post);
         }
-      } );
-      annualizedBlogPosts.push( {
+      });
+      annualizedBlogPosts.push({
         "year": year,
         "posts": temp
-      } );
-    } );
+      });
+    });
 
     // Sort annualizedBlogPosts by newest year first
-    annualizedBlogPosts.sort( ( a, b ) => {
+    annualizedBlogPosts.sort((a, b) => {
       a = a.year;
       b = b.year;
-      return a > b ? -1 : ( a < b ? 1 : 0 );
-    } );
+      return a > b ? -1 : (a < b ? 1 : 0);
+    });
 
     // create the latest blog posts array
-    latestBlogPosts = allSortedBlogPosts.reverse().slice( 0, options.latestQuantity );
+    latestBlogPosts = allSortedBlogPosts.reverse().slice(0, options.latestQuantity);
 
     // Add to metalsmith.metadata for global access
     const metadata = metalsmith.metadata();
@@ -200,7 +199,7 @@ function initMetalsmithBlogLists( options ) {
     metadata.annualizedBlogPosts = annualizedBlogPosts;
 
     // update metadata
-    metalsmith.metadata( metadata );
+    metalsmith.metadata(metadata);
 
     done();
   };
