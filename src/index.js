@@ -1,6 +1,3 @@
-import debugModule from 'debug';
-const debug = debugModule('metalsmith-blog-lists');
-
 /**
  * @typedef Options
  * @property {number} latestQuantity - Number of posts to show in latest blog posts list
@@ -8,7 +5,6 @@ const debug = debugModule('metalsmith-blog-lists');
  * @property {string} featuredPostOrder - Order of featured posts: "asc" or "desc"
  * @property {string} fileExtension - File extension of blog posts (e.g., ".md")
  * @property {string} blogDirectory - Relative path to blog directory (e.g., "./blog")
- * @property {boolean} debugEnabled - Enable debug logging
  */
 
 /** @type {Options} */
@@ -17,8 +13,7 @@ const defaults = {
   featuredQuantity: 3,
   featuredPostOrder: "desc",
   fileExtension: ".md",
-  blogDirectory: "./blog", // Relative path to blog directory (can include subdirectories)
-  debugEnabled: false
+  blogDirectory: "./blog" // Relative path to blog directory (can include subdirectories)
 };
 
 /**
@@ -59,6 +54,11 @@ function initMetalsmithBlogLists(options) {
   options = normalizeOptions(options);
 
   return function metalsmithBlogLists(files, metalsmith, done) {
+    // Get debug function from metalsmith
+    const debug = metalsmith.debug ? metalsmith.debug('metalsmith-blog-lists') : () => {};
+    
+    debug('Starting blog-lists plugin with options: %O', options);
+    
     const featuredBlogPosts = [];
     const allSortedBlogPosts = [];
     const annualizedBlogPosts = [];
@@ -123,31 +123,22 @@ function initMetalsmithBlogLists(options) {
     // Get the sort order (maintain backward compatibility for featuredPostSortOrder)
     const sortOrder = options.featuredPostOrder;
     
-    // Debug the provided options
-    if (options.debugEnabled) {
-      debug('Using sort order from options: %s', sortOrder);
-    }
-    
-    if (options.debugEnabled) {
-      debug('Featured blog posts before final sort: %O', featuredBlogPosts);
-      debug('Sort order setting: %s', sortOrder);
-    }
+    debug('Using sort order from options: %s', sortOrder);
+    debug('Featured blog posts before final sort: %O', featuredBlogPosts);
     
     // We've already sorted by order (low to high = 1, 2, 3)
     // For ascending order (asc), keep current sort (low to high = 1, 2, 3)
     // For descending order (desc), we need to reverse (high to low = 3, 2, 1)
     if (sortOrder === 'asc') {
-      if (options.debugEnabled) {debug('Using ascending sort order (low to high = 1, 2, 3)');}
+      debug('Using ascending sort order (low to high = 1, 2, 3)');
       // Already in ascending order (low to high), so no change needed
     } else {
       // Default is descending order (high to low)
-      if (options.debugEnabled) {debug('Using descending sort order (high to low = 3, 2, 1)');}
+      debug('Using descending sort order (high to low = 3, 2, 1)');
       featuredBlogPosts.reverse();
     }
     
-    if (options.debugEnabled) {
-      debug('Featured blog posts after sorting: %O', featuredBlogPosts);
-    }
+    debug('Featured blog posts after sorting: %O', featuredBlogPosts);
     featuredBlogPosts.splice(options.featuredQuantity);
 
     // create the yearly archive list from array allSortedBlogPosts
@@ -207,8 +198,3 @@ function initMetalsmithBlogLists(options) {
 
 // ESM export
 export default initMetalsmithBlogLists;
-
-// CommonJS export compatibility
-if (typeof module !== 'undefined') {
-  module.exports = initMetalsmithBlogLists;
-}
