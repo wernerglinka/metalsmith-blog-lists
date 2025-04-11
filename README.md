@@ -16,12 +16,16 @@ The plugin adds the following lists to the metadata to enable various blog widge
 - Featured Blogs
 - Annualized Blogs List
 
-The following data is available for each blogpost:
-- Title
-- Date
-- Author
-- Path
-- Image
+The following properties must be defined in the frontmatter:
+```yaml
+  post:
+    title
+    excerpt
+    date
+    author
+    image
+```
+`post` is the default name of the blog properties object. It may be changed by setting the `blogObject` option.
 
 The lists may be used to show all blog posts by a particular author.
 
@@ -108,6 +112,19 @@ metalsmith.use(blogLists({
   blogObject: ""  // For nested blog properties (e.g., thisFile.blog.title), use "blog"
 }))
 ```
+
+## Options
+
+| Option             | Type                  | Default       | Description                                                                                              |
+|--------------------|----------------------|---------------|----------------------------------------------------------------------------------------------------------|
+| latestQuantity     | Number               | 3             | The number of latest blog posts to display                                                               |
+| featuredQuantity      | Number               | 3             | The number of featured blog posts to display                                                             |
+| featuredPostOrder           | String               | 'desc'        | The order in which featured blog posts are displayed: "asc" or "desc"                                 |
+| fileExtension      | String               | '.md'         | The file extension of blog posts                                                                         |
+| blogDirectory             | String               | ./blog          | The path relative to the Metalsmith source directory containing the blog posts                               |
+| blogObject             | String               | 'post'          | The name of the blog object in frontmatter for nested properties (e.g., "post" for thisFile.post.title) |
+| usePermalinks      | Boolean              | true          | When true, file paths will have extensions removed (e.g., '/blog/post'). When false, .md extensions will be replaced with .html (e.g., '/blog/post.html') |
+
 ## Examples 
 _Using a Nunjucks template_ 
 ### Display an annualized blog archive
