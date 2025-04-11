@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import metalsmith from 'metalsmith';
-import layouts from '@metalsmith/layouts';
 
 // Import the plugin from src for direct coverage
 import plugin from '../src/index.js';
