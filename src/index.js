@@ -12,10 +12,10 @@
 const defaults = {
   latestQuantity: 3,
   featuredQuantity: 3,
-  featuredPostOrder: "desc",
-  fileExtension: ".md",
-  blogDirectory: "./blog", // Relative path to blog directory (can include subdirectories)
-  blogObject: "" // Empty string means direct properties (thisFile.title), otherwise nested (thisFile[blogObject].title)
+  featuredPostOrder: 'desc',
+  fileExtension: '.md',
+  blogDirectory: './blog', // Relative path to blog directory (can include subdirectories)
+  blogObject: '' // Empty string means direct properties (thisFile.title), otherwise nested (thisFile[blogObject].title)
 };
 
 /**
@@ -26,7 +26,7 @@ const defaults = {
 function normalizeOptions(options) {
   // Start with defaults
   const result = Object.assign({}, defaults, options || {});
-  
+
   // Ensure blogDirectory has the correct format (starts with ./ and doesn't end with /)
   let dirPath = result.blogDirectory;
   if (!dirPath.startsWith('./')) {
@@ -36,13 +36,13 @@ function normalizeOptions(options) {
     dirPath = dirPath.substring(0, dirPath.length - 1);
   }
   result.blogDirectory = dirPath;
-  
+
   return result;
 }
 
 /**
  * A Metalsmith plugin to add various blog lists to metadata
- * 
+ *
  * Creates four collections of blog posts:
  * - latestBlogPosts: Most recent posts, limited by latestQuantity
  * - featuredBlogPosts: Posts marked as featured in frontmatter, limited by featuredQuantity
@@ -58,9 +58,9 @@ function initMetalsmithBlogLists(options) {
   return function metalsmithBlogLists(files, metalsmith, done) {
     // Get debug function from metalsmith
     const debug = metalsmith.debug ? metalsmith.debug('metalsmith-blog-lists') : () => {};
-    
+
     debug('Starting blog-lists plugin with options: %O', options);
-    
+
     const featuredBlogPosts = [];
     const allSortedBlogPosts = [];
     const annualizedBlogPosts = [];
@@ -72,19 +72,19 @@ function initMetalsmithBlogLists(options) {
 
       // we only look at blog posts
       // Remove the ./ prefix from the directory for file path matching
-      const blogDirWithoutPrefix = options.blogDirectory.startsWith('./') 
-        ? options.blogDirectory.substring(2) 
+      const blogDirWithoutPrefix = options.blogDirectory.startsWith('./')
+        ? options.blogDirectory.substring(2)
         : options.blogDirectory;
-        
+
       // Check all possible directory formats to maximize compatibility
-      const isInBlogDirectory = 
-           file.indexOf(`${options.blogDirectory}/`) !== -1 || 
-           file.indexOf(`${blogDirWithoutPrefix}/`) !== -1 ||
-           file.startsWith(`${options.blogDirectory}/`) || 
-           file.startsWith(`${blogDirWithoutPrefix}/`);
-           
+      const isInBlogDirectory =
+        file.indexOf(`${options.blogDirectory}/`) !== -1 ||
+        file.indexOf(`${blogDirWithoutPrefix}/`) !== -1 ||
+        file.startsWith(`${options.blogDirectory}/`) ||
+        file.startsWith(`${blogDirWithoutPrefix}/`);
+
       if (isInBlogDirectory) {
-        const filePath = file.replace(options.fileExtension, "");
+        const filePath = file.replace(options.fileExtension, '');
 
         // Get properties based on whether we're using a nested blog object or direct properties
         const getBlogProperty = (file, propertyName, fallbackName) => {
@@ -95,36 +95,36 @@ function initMetalsmithBlogLists(options) {
               return file[options.blogObject][propertyName];
             }
           }
-          
+
           // Try direct properties as fallbacks
           if (file[propertyName] !== undefined) {
             return file[propertyName];
           }
-          
+
           // Try alternative property name if provided
           if (fallbackName && file[fallbackName] !== undefined) {
             return file[fallbackName];
           }
-          
+
           // Return undefined if not found
           return undefined;
         };
-        
+
         // Check if post is featured
         const isFeatured = getBlogProperty(thisFile, 'featuredBlogpost', null);
-        
+
         // assemble a sorted all blogs list
         // this list may be used when the whole list of blog posts is needed to
         // create a context influenced list like showing all other posts by
         // a particular author when we show a blog post.
         temp = {
-          "title": getBlogProperty(thisFile, 'title', 'blogTitle') || getBlogProperty(thisFile, 'blogTitle', 'title'),
-          "excerpt": getBlogProperty(thisFile, 'excerpt', null),
-          "date": new Date(getBlogProperty(thisFile, 'date', null)),
-          "author": getBlogProperty(thisFile, 'author', null),
-          "path": filePath,
-          "image": getBlogProperty(thisFile, 'image', null),
-          "order": getBlogProperty(thisFile, 'featuredBlogpostOrder', null)
+          title: getBlogProperty(thisFile, 'title', 'blogTitle') || getBlogProperty(thisFile, 'blogTitle', 'title'),
+          excerpt: getBlogProperty(thisFile, 'excerpt', null),
+          date: new Date(getBlogProperty(thisFile, 'date', null)),
+          author: getBlogProperty(thisFile, 'author', null),
+          path: filePath,
+          image: getBlogProperty(thisFile, 'image', null),
+          order: getBlogProperty(thisFile, 'featuredBlogpostOrder', null)
         };
         allSortedBlogPosts.push(temp);
 
@@ -148,13 +148,13 @@ function initMetalsmithBlogLists(options) {
     featuredBlogPosts.sort((a, b) => {
       return a.order - b.order;
     });
-    
+
     // Get the sort order (maintain backward compatibility for featuredPostSortOrder)
     const sortOrder = options.featuredPostOrder;
-    
+
     debug('Using sort order from options: %s', sortOrder);
     debug('Featured blog posts before final sort: %O', featuredBlogPosts);
-    
+
     // We've already sorted by order (low to high = 1, 2, 3)
     // For ascending order (asc), keep current sort (low to high = 1, 2, 3)
     // For descending order (desc), we need to reverse (high to low = 3, 2, 1)
@@ -166,7 +166,7 @@ function initMetalsmithBlogLists(options) {
       debug('Using descending sort order (high to low = 3, 2, 1)');
       featuredBlogPosts.reverse();
     }
-    
+
     debug('Featured blog posts after sorting: %O', featuredBlogPosts);
     featuredBlogPosts.splice(options.featuredQuantity);
 
@@ -196,8 +196,8 @@ function initMetalsmithBlogLists(options) {
         }
       });
       annualizedBlogPosts.push({
-        "year": year,
-        "posts": temp
+        year: year,
+        posts: temp
       });
     });
 
@@ -205,7 +205,7 @@ function initMetalsmithBlogLists(options) {
     annualizedBlogPosts.sort((a, b) => {
       a = a.year;
       b = b.year;
-      return a > b ? -1 : (a < b ? 1 : 0);
+      return a > b ? -1 : a < b ? 1 : 0;
     });
 
     // create the latest blog posts array

@@ -52,8 +52,7 @@
     "prettier": "^3.5.3",
     "release-it": "18.1.2"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "metalsmith": "^2.5.1"
   },
