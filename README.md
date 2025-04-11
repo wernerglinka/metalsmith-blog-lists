@@ -37,6 +37,23 @@ The plugin provides array `featuredBlogPosts`. Blog posts can specify, in their 
 ### Annualized Blogs List
 The plugin provides an associative array `annualizedBlogPosts`. All blog posts are listed by their creation year.
 
+### Nested Blog Properties
+The plugin also supports getting blog properties from a nested object in your frontmatter. This is useful when you want to organize your blog-related properties under a single object. For example:
+
+```yaml
+---
+title: "Page Title"  # Regular page title
+blog:
+  title: "Blog Post Title"  # Blog-specific title
+  excerpt: "This is the blog excerpt"
+  date: "2023-01-15"
+  featuredBlogpost: true
+  featuredBlogpostOrder: 1
+---
+```
+
+To use this structure, set the `blogObject` option to the name of the nested object (e.g., `"blog"`). The plugin will first look for properties inside that object and fall back to direct properties if not found.
+
 ## Installation
 
 NPM:
@@ -71,8 +88,9 @@ metalsmith.use(blogLists({
   latestQuantity: 4,
   featuredQuantity: 2,
   featuredPostOrder: "desc",
-  fileExtension: ".md.njk",
-  blogDirectory: "./blog"
+  fileExtension: ".md",
+  blogDirectory: "./blog",
+  blogObject: ""  // For nested blog properties (e.g., thisFile.blog.title), use "blog"
 }))
 ```
 
@@ -85,8 +103,9 @@ metalsmith.use(blogLists({
   latestQuantity: 4,
   featuredQuantity: 2,
   featuredPostOrder: "desc",
-  fileExtension: ".md.njk",
-  blogDirectory: "./blog"
+  fileExtension: ".md",
+  blogDirectory: "./blog",
+  blogObject: ""  // For nested blog properties (e.g., thisFile.blog.title), use "blog"
 }))
 ```
 ## Examples 
@@ -131,9 +150,12 @@ You can pass options to metalsmith-blog-lists with the Javascript API or CLI:
 | **featuredPostOrder** | The order in which featured blogposts are displayed: `"asc"` or `"desc"` | `"desc"` | No |
 | **fileExtension** | The blogpost file extension | `".md"` | No |
 | **blogDirectory** | The path relative to the Metalsmith source directory containing the blog posts (e.g., `"./blog"`, `"./content/blog"`) | `"./blog"` | No |
+| **blogObject** | The name of the blog object in frontmatter for nested properties (e.g., `"blog"` for `thisFile.blog.title`) | `""` | No |
 | **debugEnabled** | Enable detailed debug logging | `false` | No |
 
 > **Note:** The `blogDirectory` option now supports both root-level blogs (`"./blog"`) and subdirectory blogs (`"./content/blog"`). You should always include the relative path prefix `./`.
+
+> **Note:** The `blogObject` option lets you work with nested blog properties in your frontmatter. When set to a non-empty string (e.g., `"blog"`), the plugin will look for properties inside that object (e.g., `thisFile.blog.title`). If not found or if `blogObject` is empty, it falls back to direct properties (e.g., `thisFile.title`).
 
 ## Debug
 
@@ -155,8 +177,9 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
         "latestQuantity": 4,
         "featuredQuantity": 2,
         "featuredPostOrder": "desc",
-        "fileExtension": ".md.njk",
-        "blogDirectory": "./blog"
+        "fileExtension": ".md",
+        "blogDirectory": "./blog",
+        "blogObject": ""
       }
     }
   ]

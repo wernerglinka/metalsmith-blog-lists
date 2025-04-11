@@ -5,6 +5,7 @@
  * @property {string} featuredPostOrder - Order of featured posts: "asc" or "desc"
  * @property {string} fileExtension - File extension of blog posts (e.g., ".md")
  * @property {string} blogDirectory - Relative path to blog directory (e.g., "./blog")
+ * @property {string} blogObject - Name of the blog object in frontmatter (e.g., "blog" for thisFile.blog.title) or empty string for direct properties
  */
 
 /** @type {Options} */
@@ -13,7 +14,8 @@ const defaults = {
   featuredQuantity: 3,
   featuredPostOrder: "desc",
   fileExtension: ".md",
-  blogDirectory: "./blog" // Relative path to blog directory (can include subdirectories)
+  blogDirectory: "./blog", // Relative path to blog directory (can include subdirectories)
+  blogObject: "" // Empty string means direct properties (thisFile.title), otherwise nested (thisFile[blogObject].title)
 };
 
 /**
@@ -84,18 +86,45 @@ function initMetalsmithBlogLists(options) {
       if (isInBlogDirectory) {
         const filePath = file.replace(options.fileExtension, "");
 
+        // Get properties based on whether we're using a nested blog object or direct properties
+        const getBlogProperty = (file, propertyName, fallbackName) => {
+          // If blogObject is specified and exists in the file
+          if (options.blogObject && file[options.blogObject]) {
+            // First try the property in the blog object
+            if (file[options.blogObject][propertyName] !== undefined) {
+              return file[options.blogObject][propertyName];
+            }
+          }
+          
+          // Try direct properties as fallbacks
+          if (file[propertyName] !== undefined) {
+            return file[propertyName];
+          }
+          
+          // Try alternative property name if provided
+          if (fallbackName && file[fallbackName] !== undefined) {
+            return file[fallbackName];
+          }
+          
+          // Return undefined if not found
+          return undefined;
+        };
+        
+        // Check if post is featured
+        const isFeatured = getBlogProperty(thisFile, 'featuredBlogpost', null);
+        
         // assemble a sorted all blogs list
         // this list may be used when the whole list of blog posts is needed to
         // create a context influenced list like showing all other posts by
         // a particular author when we show a blog post.
         temp = {
-          "title": thisFile.blogTitle || thisFile.title,
-          "excerpt": thisFile.excerpt,
-          "date": new Date(thisFile.date),
-          "author": thisFile.author,
+          "title": getBlogProperty(thisFile, 'title', 'blogTitle') || getBlogProperty(thisFile, 'blogTitle', 'title'),
+          "excerpt": getBlogProperty(thisFile, 'excerpt', null),
+          "date": new Date(getBlogProperty(thisFile, 'date', null)),
+          "author": getBlogProperty(thisFile, 'author', null),
           "path": filePath,
-          "image": thisFile.image,
-          "order": thisFile.featuredBlogpostOrder
+          "image": getBlogProperty(thisFile, 'image', null),
+          "order": getBlogProperty(thisFile, 'featuredBlogpostOrder', null)
         };
         allSortedBlogPosts.push(temp);
 
@@ -105,7 +134,7 @@ function initMetalsmithBlogLists(options) {
         //    featuredBlogpostOrder: <integer>
         //    featuredPostOrder:: "asc" | "desc"
         // to be set in the files frontmatter
-        if (thisFile.featuredBlogpost) {
+        if (isFeatured) {
           featuredBlogPosts.push(temp);
         }
       }

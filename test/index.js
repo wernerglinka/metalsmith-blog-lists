@@ -345,6 +345,80 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
   });
   
+  // Test the blogObject option for nested frontmatter properties
+  it('should support blogObject option for nested frontmatter properties', (done) => {
+    // Create mock files with blog object containing nested properties
+    const files = {
+      'blog/test-post1.html': {
+        // Direct properties
+        title: 'Fallback Title 1',
+        date: '2022-01-15', // This should be overridden by blog.date
+        // Nested blog object
+        blog: {
+          title: 'Nested Blog Title 1',
+          date: '2022-01-01',
+          excerpt: 'This is a nested excerpt',
+          featuredBlogpost: true,
+          featuredBlogpostOrder: 1
+        }
+      },
+      'blog/test-post2.html': {
+        // Only nested properties
+        blog: {
+          title: 'Nested Blog Title 2',
+          date: '2022-02-01',
+          author: 'Nested Author',
+          featuredBlogpost: true,
+          featuredBlogpostOrder: 2
+        }
+      },
+      'blog/test-post3.html': {
+        // Only direct properties (still should work with blogObject set)
+        title: 'Direct Title 3',
+        date: '2022-03-01',
+        excerpt: 'Direct excerpt',
+        featuredBlogpost: true,
+        featuredBlogpostOrder: 3
+      }
+    };
+    
+    // Mock metalsmith instance
+    const metadata = {};
+    const metalsmithMock = {
+      metadata: function() { return metadata; }
+    };
+    
+    // Create plugin with the blogObject option
+    const pluginInstance = plugin({
+      blogObject: 'blog'
+    });
+    
+    // Run plugin on mock data
+    pluginInstance(files, metalsmithMock, (err) => {
+      if (err) {return done(err);}
+      
+      // Should find all posts regardless of property structure
+      assert.strictEqual(metadata.featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
+      assert.strictEqual(metadata.allSortedBlogPosts.length, 3, 'Should have 3 blog posts in allSortedBlogPosts');
+      
+      // Verify that nested properties are used correctly
+      const sortedByDate = [...metadata.allSortedBlogPosts].sort((a, b) => a.date - b.date);
+      
+      // First post should use the nested blog.title value
+      assert.strictEqual(sortedByDate[0].title, 'Nested Blog Title 1', 'Should use nested blog.title');
+      // First post should use the nested blog.date value, not the direct date
+      assert.strictEqual(sortedByDate[0].date.toISOString().substring(0, 10), '2022-01-01', 'Should use nested blog.date');
+      
+      // Second post should use the nested blog.title value
+      assert.strictEqual(sortedByDate[1].title, 'Nested Blog Title 2', 'Should use nested blog.title for second post');
+      
+      // Third post should fall back to direct properties
+      assert.strictEqual(sortedByDate[2].title, 'Direct Title 3', 'Should fall back to direct properties');
+      
+      done();
+    });
+  });
+  
   // Test featuredPostOrder option
   it('should respect featuredPostOrder setting', (done) => {
     // Create mock files with order
