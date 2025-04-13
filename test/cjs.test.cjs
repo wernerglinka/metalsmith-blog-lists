@@ -81,4 +81,41 @@ describe( 'metalsmith-blog-lists (CommonJS)', () => {
       assert.strictEqual( post.path.endsWith( '.md' ), false, 'Path should not end with .md' );
     } );
   } );
+
+  // Test index files with usePermalinks in CommonJS
+  it( 'should handle index files correctly with usePermalinks', () => {
+    // Test with usePermalinks = true (default)
+    const instance = plugin();
+
+    // Create a simple test with mock files and metadata
+    const files = {
+      'blog/post1/index.md': {
+        title: 'Post with Index 1',
+        date: '2023-01-01'
+      },
+      'blog/post2/index.md': {
+        title: 'Post with Index 2',
+        date: '2023-02-01'
+      }
+    };
+
+    const metadata = {};
+    const metalsmithMock = {
+      metadata: function() { return metadata; }
+    };
+
+    // Run the plugin
+    instance( files, metalsmithMock, () => { } );
+
+    // Verify paths don't end with '/index'
+    assert.strictEqual( metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts' );
+    metadata.allSortedBlogPosts.forEach( post => {
+      assert.strictEqual( post.path.endsWith( '/index' ), false, 'Path should not end with /index' );
+      // Should end with the directory name instead
+      assert.ok(
+        post.path === 'blog/post1' || post.path === 'blog/post2',
+        'Path should be the directory name without /index'
+      );
+    } );
+  } );
 } );

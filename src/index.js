@@ -94,6 +94,11 @@ function initMetalsmithBlogLists(options) {
         if (options.usePermalinks) {
           // For permalinks: remove extension (e.g., 'blog/post')
           filePath = file.replace(options.fileExtension, '');
+
+          // Handle index files - remove trailing '/index'
+          if (filePath.endsWith('/index')) {
+            filePath = filePath.replace(/\/index$/, '');
+          }
         } else {
           // For non-permalinks: replace .md with .html
           filePath = file.replace(options.fileExtension, '.html');
