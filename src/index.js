@@ -25,14 +25,14 @@ const defaults = {
  * @param {Options} [options] - User-provided options
  * @returns {Object} - Normalized options object
  */
-function normalizeOptions( options ) {
+const normalizeOptions = ( options ) => {
   // Start with defaults
-  const result = Object.assign( {}, defaults, options || {} );
+  const result = { ...defaults, ...( options || {} ) };
 
   // Ensure blogDirectory has the correct format (starts with ./ and doesn't end with /)
   let dirPath = result.blogDirectory;
   if ( !dirPath.startsWith( './' ) ) {
-    dirPath = `./${dirPath}`;
+    dirPath = `./${ dirPath }`;
   }
   if ( dirPath.endsWith( '/' ) ) {
     dirPath = dirPath.substring( 0, dirPath.length - 1 );
@@ -40,7 +40,7 @@ function normalizeOptions( options ) {
   result.blogDirectory = dirPath;
 
   return result;
-}
+};
 
 /**
  * A Metalsmith plugin to add various blog lists to metadata
@@ -54,12 +54,13 @@ function normalizeOptions( options ) {
  * @param {Options} options - Plugin options
  * @returns {import('metalsmith').Plugin} - Metalsmith plugin function
  */
-function initMetalsmithBlogLists( options ) {
+const initMetalsmithBlogLists = ( options ) => {
   options = normalizeOptions( options );
 
-  return function metalsmithBlogLists( files, metalsmith, done ) {
+  // Create the plugin function with arrow syntax
+  const metalsmithBlogLists = ( files, metalsmith, done ) => {
     // Get debug function from metalsmith
-    const debug = metalsmith.debug ? metalsmith.debug( 'metalsmith-blog-lists' ) : () => {};
+    const debug = metalsmith.debug ? metalsmith.debug( 'metalsmith-blog-lists' ) : () => { };
 
     debug( 'Starting blog-lists plugin with options: %O', options );
 
@@ -72,7 +73,7 @@ function initMetalsmithBlogLists( options ) {
 
     // Process each file in the Metalsmith files object
     Object.keys( files ).forEach( ( file ) => {
-      const thisFile = files[file];
+      const thisFile = files[ file ];
 
       // Prepare blog directory path for flexible matching
       // Remove the ./ prefix from the directory for file path matching
@@ -83,10 +84,10 @@ function initMetalsmithBlogLists( options ) {
       // Check if file is in the blog directory using multiple matching strategies
       // This ensures compatibility with different path formats
       const isInBlogDirectory =
-        file.indexOf( `${options.blogDirectory}/` ) !== -1 ||
-        file.indexOf( `${blogDirWithoutPrefix}/` ) !== -1 ||
-        file.startsWith( `${options.blogDirectory}/` ) ||
-        file.startsWith( `${blogDirWithoutPrefix}/` );
+        file.indexOf( `${ options.blogDirectory }/` ) !== -1 ||
+        file.indexOf( `${ blogDirWithoutPrefix }/` ) !== -1 ||
+        file.startsWith( `${ options.blogDirectory }/` ) ||
+        file.startsWith( `${ blogDirWithoutPrefix }/` );
 
       if ( isInBlogDirectory ) {
         // Get the file path for use in links, handling both permalink and non-permalink formats
@@ -113,21 +114,21 @@ function initMetalsmithBlogLists( options ) {
          */
         const getBlogProperty = ( file, propertyName, fallbackName ) => {
           // If blogObject is specified and exists in the file
-          if ( options.blogObject && file[options.blogObject] ) {
+          if ( options.blogObject && file[ options.blogObject ] ) {
             // First try the property in the blog object
-            if ( file[options.blogObject][propertyName] !== undefined ) {
-              return file[options.blogObject][propertyName];
+            if ( file[ options.blogObject ][ propertyName ] !== undefined ) {
+              return file[ options.blogObject ][ propertyName ];
             }
           }
 
           // Try direct properties as fallbacks
-          if ( file[propertyName] !== undefined ) {
-            return file[propertyName];
+          if ( file[ propertyName ] !== undefined ) {
+            return file[ propertyName ];
           }
 
           // Try alternative property name if provided
-          if ( fallbackName && file[fallbackName] !== undefined ) {
-            return file[fallbackName];
+          if ( fallbackName && file[ fallbackName ] !== undefined ) {
+            return file[ fallbackName ];
           }
 
           // Return undefined if not found
@@ -251,7 +252,10 @@ function initMetalsmithBlogLists( options ) {
     // Signal completion to Metalsmith
     done();
   };
-}
 
-// ESM export
+  // Return the function
+  return metalsmithBlogLists;
+};
+
+// Export the plugin
 export default initMetalsmithBlogLists;
