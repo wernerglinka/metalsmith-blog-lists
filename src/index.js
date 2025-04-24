@@ -25,17 +25,17 @@ const defaults = {
  * @param {Options} [options] - User-provided options
  * @returns {Object} - Normalized options object
  */
-function normalizeOptions(options) {
+function normalizeOptions( options ) {
   // Start with defaults
-  const result = Object.assign({}, defaults, options || {});
+  const result = Object.assign( {}, defaults, options || {} );
 
   // Ensure blogDirectory has the correct format (starts with ./ and doesn't end with /)
   let dirPath = result.blogDirectory;
-  if (!dirPath.startsWith('./')) {
+  if ( !dirPath.startsWith( './' ) ) {
     dirPath = `./${dirPath}`;
   }
-  if (dirPath.endsWith('/')) {
-    dirPath = dirPath.substring(0, dirPath.length - 1);
+  if ( dirPath.endsWith( '/' ) ) {
+    dirPath = dirPath.substring( 0, dirPath.length - 1 );
   }
   result.blogDirectory = dirPath;
 
@@ -54,14 +54,14 @@ function normalizeOptions(options) {
  * @param {Options} options - Plugin options
  * @returns {import('metalsmith').Plugin} - Metalsmith plugin function
  */
-function initMetalsmithBlogLists(options) {
-  options = normalizeOptions(options);
+function initMetalsmithBlogLists( options ) {
+  options = normalizeOptions( options );
 
-  return function metalsmithBlogLists(files, metalsmith, done) {
+  return function metalsmithBlogLists( files, metalsmith, done ) {
     // Get debug function from metalsmith
-    const debug = metalsmith.debug ? metalsmith.debug('metalsmith-blog-lists') : () => {};
+    const debug = metalsmith.debug ? metalsmith.debug( 'metalsmith-blog-lists' ) : () => {};
 
-    debug('Starting blog-lists plugin with options: %O', options);
+    debug( 'Starting blog-lists plugin with options: %O', options );
 
     // Initialize arrays to store different blog post collections
     const featuredBlogPosts = []; // Will hold posts marked as featured
@@ -71,37 +71,37 @@ function initMetalsmithBlogLists(options) {
     let temp; // Temporary object for building post data
 
     // Process each file in the Metalsmith files object
-    Object.keys(files).forEach((file) => {
+    Object.keys( files ).forEach( ( file ) => {
       const thisFile = files[file];
 
       // Prepare blog directory path for flexible matching
       // Remove the ./ prefix from the directory for file path matching
-      const blogDirWithoutPrefix = options.blogDirectory.startsWith('./')
-        ? options.blogDirectory.substring(2)
+      const blogDirWithoutPrefix = options.blogDirectory.startsWith( './' )
+        ? options.blogDirectory.substring( 2 )
         : options.blogDirectory;
 
       // Check if file is in the blog directory using multiple matching strategies
       // This ensures compatibility with different path formats
       const isInBlogDirectory =
-        file.indexOf(`${options.blogDirectory}/`) !== -1 ||
-        file.indexOf(`${blogDirWithoutPrefix}/`) !== -1 ||
-        file.startsWith(`${options.blogDirectory}/`) ||
-        file.startsWith(`${blogDirWithoutPrefix}/`);
+        file.indexOf( `${options.blogDirectory}/` ) !== -1 ||
+        file.indexOf( `${blogDirWithoutPrefix}/` ) !== -1 ||
+        file.startsWith( `${options.blogDirectory}/` ) ||
+        file.startsWith( `${blogDirWithoutPrefix}/` );
 
-      if (isInBlogDirectory) {
+      if ( isInBlogDirectory ) {
         // Get the file path for use in links, handling both permalink and non-permalink formats
         let filePath;
-        if (options.usePermalinks) {
+        if ( options.usePermalinks ) {
           // For permalinks: remove extension (e.g., 'blog/post')
-          filePath = file.replace(options.fileExtension, '');
+          filePath = file.replace( options.fileExtension, '' );
 
           // Handle index files - remove trailing '/index'
-          if (filePath.endsWith('/index')) {
-            filePath = filePath.replace(/\/index$/, '');
+          if ( filePath.endsWith( '/index' ) ) {
+            filePath = filePath.replace( /\/index$/, '' );
           }
         } else {
           // For non-permalinks: replace .md with .html
-          filePath = file.replace(options.fileExtension, '.html');
+          filePath = file.replace( options.fileExtension, '.html' );
         }
 
         /**
@@ -111,22 +111,22 @@ function initMetalsmithBlogLists(options) {
          * - Direct: file.title
          * Also tries fallback property names if provided
          */
-        const getBlogProperty = (file, propertyName, fallbackName) => {
+        const getBlogProperty = ( file, propertyName, fallbackName ) => {
           // If blogObject is specified and exists in the file
-          if (options.blogObject && file[options.blogObject]) {
+          if ( options.blogObject && file[options.blogObject] ) {
             // First try the property in the blog object
-            if (file[options.blogObject][propertyName] !== undefined) {
+            if ( file[options.blogObject][propertyName] !== undefined ) {
               return file[options.blogObject][propertyName];
             }
           }
 
           // Try direct properties as fallbacks
-          if (file[propertyName] !== undefined) {
+          if ( file[propertyName] !== undefined ) {
             return file[propertyName];
           }
 
           // Try alternative property name if provided
-          if (fallbackName && file[fallbackName] !== undefined) {
+          if ( fallbackName && file[fallbackName] !== undefined ) {
             return file[fallbackName];
           }
 
@@ -135,108 +135,108 @@ function initMetalsmithBlogLists(options) {
         };
 
         // Check if post is featured by looking for featuredBlogpost property
-        const isFeatured = getBlogProperty(thisFile, 'featuredBlogpost', null);
+        const isFeatured = getBlogProperty( thisFile, 'featuredBlogpost', null );
 
         // Create a standardized post object with essential metadata
         temp = {
-          title: getBlogProperty(thisFile, 'title', 'blogTitle') || getBlogProperty(thisFile, 'blogTitle', 'title'),
-          excerpt: getBlogProperty(thisFile, 'excerpt', null),
-          date: new Date(getBlogProperty(thisFile, 'date', null)),
-          author: getBlogProperty(thisFile, 'author', null),
+          title: getBlogProperty( thisFile, 'title', 'blogTitle' ) || getBlogProperty( thisFile, 'blogTitle', 'title' ),
+          excerpt: getBlogProperty( thisFile, 'excerpt', null ),
+          date: new Date( getBlogProperty( thisFile, 'date', null ) ),
+          author: getBlogProperty( thisFile, 'author', null ),
           path: filePath,
-          image: getBlogProperty(thisFile, 'image', null),
-          order: getBlogProperty(thisFile, 'featuredBlogpostOrder', null)
+          image: getBlogProperty( thisFile, 'image', null ),
+          order: getBlogProperty( thisFile, 'featuredBlogpostOrder', null )
         };
 
         // Add to all blog posts collection
-        allSortedBlogPosts.push(temp);
+        allSortedBlogPosts.push( temp );
 
         // If post is marked as featured, add to featured posts collection
-        if (isFeatured) {
-          featuredBlogPosts.push(temp);
+        if ( isFeatured ) {
+          featuredBlogPosts.push( temp );
         }
       }
-    });
+    } );
 
     // Sort all blog posts by date (oldest to newest)
-    allSortedBlogPosts.sort((a, b) => {
+    allSortedBlogPosts.sort( ( a, b ) => {
       return a.date.getTime() - b.date.getTime();
-    });
+    } );
 
     // Sort featured posts by their order property (low to high)
-    featuredBlogPosts.sort((a, b) => {
+    featuredBlogPosts.sort( ( a, b ) => {
       return a.order - b.order;
-    });
+    } );
 
     // Apply the featured post order setting (asc or desc)
     const sortOrder = options.featuredPostOrder;
 
-    debug('Using sort order from options: %s', sortOrder);
-    debug('Featured blog posts before final sort: %O', featuredBlogPosts);
+    debug( 'Using sort order from options: %s', sortOrder );
+    debug( 'Featured blog posts before final sort: %O', featuredBlogPosts );
 
     // Handle sort order for featured posts
     // We've already sorted by order (low to high = 1, 2, 3)
     // For ascending order (asc), keep current sort (low to high = 1, 2, 3)
     // For descending order (desc), we need to reverse (high to low = 3, 2, 1)
-    if (sortOrder === 'asc') {
-      debug('Using ascending sort order (low to high = 1, 2, 3)');
+    if ( sortOrder === 'asc' ) {
+      debug( 'Using ascending sort order (low to high = 1, 2, 3)' );
       // Already in ascending order (low to high), so no change needed
     } else {
       // Default is descending order (high to low)
-      debug('Using descending order (high to low = 3, 2, 1)');
+      debug( 'Using descending order (high to low = 3, 2, 1)' );
       featuredBlogPosts.reverse();
     }
 
-    debug('Featured blog posts after sorting: %O', featuredBlogPosts);
+    debug( 'Featured blog posts after sorting: %O', featuredBlogPosts );
 
     // Limit featured posts to the specified quantity
-    featuredBlogPosts.splice(options.featuredQuantity);
+    featuredBlogPosts.splice( options.featuredQuantity );
 
     // Create the yearly archive list from allSortedBlogPosts
     const blogYears = [];
     let postYear;
 
     // Extract years from all blog posts
-    allSortedBlogPosts.forEach((post, _index) => {
-      const d = new Date(post.date);
+    allSortedBlogPosts.forEach( ( post, _index ) => {
+      const d = new Date( post.date );
       // Use getUTCFullYear to ensure January 1 dates are attributed to the correct year
       postYear = d.getUTCFullYear().toString();
       // Add year to array (will have duplicates at this point)
-      blogYears.push(postYear);
-    });
+      blogYears.push( postYear );
+    } );
 
     // Get unique years using Set
-    const yearArrayKeys = new Set(blogYears);
+    const yearArrayKeys = new Set( blogYears );
 
     // Create year-based collections
-    yearArrayKeys.forEach((year) => {
+    yearArrayKeys.forEach( ( year ) => {
       const temp = [];
       // Find all posts for this year
-      allSortedBlogPosts.forEach((post, _index) => {
-        const d = new Date(post.date);
+      allSortedBlogPosts.forEach( ( post, _index ) => {
+        const d = new Date( post.date );
         postYear = d.getUTCFullYear().toString();
         // Add post to this year's collection if it matches
-        if (year === postYear) {
-          temp.push(post);
+        if ( year === postYear ) {
+          temp.push( post );
         }
-      });
+      } );
       // Add year and its posts to annualized collection
-      annualizedBlogPosts.push({
+      annualizedBlogPosts.push( {
         year: year,
         posts: temp
-      });
-    });
+      } );
+    } );
 
     // Sort annualized posts by newest year first
-    annualizedBlogPosts.sort((a, b) => {
+    annualizedBlogPosts.sort( ( a, b ) => {
       a = a.year;
       b = b.year;
       return a > b ? -1 : a < b ? 1 : 0;
-    });
+    } );
 
     // Create latest blog posts array (most recent posts)
     // Reverse allSortedBlogPosts to get newest first, then take specified quantity
-    latestBlogPosts = allSortedBlogPosts.reverse().slice(0, options.latestQuantity);
+    latestBlogPosts = allSortedBlogPosts.reverse().slice( 0, options.latestQuantity );
 
     // Add all collections to metalsmith.metadata for global access in templates
     const metadata = metalsmith.metadata();
@@ -246,7 +246,7 @@ function initMetalsmithBlogLists(options) {
     metadata.annualizedBlogPosts = annualizedBlogPosts;
 
     // Update metadata
-    metalsmith.metadata(metadata);
+    metalsmith.metadata( metadata );
 
     // Signal completion to Metalsmith
     done();
