@@ -7,7 +7,7 @@ A metalsmith plugin to provide various blog lists
 [![license: ISC][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
 [![ESM/CommonJS][modules-badge]][npm-url]
-
+[![Known Vulnerabilities](https://snyk.io/test/github/wernerglinka/metalsmith-blog-listsn/badge.svg)](https://snyk.io/test/github/wernerglinka/metalsmith-blog-lists/badge)
 
 ## Features
 The plugin adds the following lists to the metadata to enable various blog widgets on any page.
