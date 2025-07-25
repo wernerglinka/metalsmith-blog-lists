@@ -1,6 +1,6 @@
 /**
  * Configuration utilities for metalsmith-blog-lists plugin
- * 
+ *
  * This file provides utilities for handling plugin configuration:
  * - Default configuration values
  * - Option normalization and validation
@@ -34,17 +34,17 @@ export const defaults = {
  * @param {Options} [options] - User-provided options
  * @returns {Object} - Normalized options object
  */
-export const normalizeOptions = ( options ) => {
+export const normalizeOptions = (options) => {
   // Start with defaults
-  const result = { ...defaults, ...( options || {} ) };
+  const result = { ...defaults, ...(options || {}) };
 
   // Ensure blogDirectory has the correct format (starts with ./ and doesn't end with /)
   let dirPath = result.blogDirectory;
-  if ( !dirPath.startsWith( './' ) ) {
-    dirPath = `./${ dirPath }`;
+  if (!dirPath.startsWith('./')) {
+    dirPath = `./${dirPath}`;
   }
-  if ( dirPath.endsWith( '/' ) ) {
-    dirPath = dirPath.substring( 0, dirPath.length - 1 );
+  if (dirPath.endsWith('/')) {
+    dirPath = dirPath.substring(0, dirPath.length - 1);
   }
   result.blogDirectory = dirPath;
 

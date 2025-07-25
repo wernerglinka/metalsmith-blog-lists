@@ -1,4 +1,6 @@
 // Configuration for ESLint 9.x
+import prettierConfig from 'eslint-config-prettier';
+
 export default [
   {
     ignores: ['lib/**/*', 'test/fixtures/**/*', 'node_modules/**/*', 'coverage/**/*']
@@ -10,6 +12,7 @@ export default [
       sourceType: 'module'
     },
     rules: {
+      ...prettierConfig.rules,
       'no-console': [
         'warn',
         {

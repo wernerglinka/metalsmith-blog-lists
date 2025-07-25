@@ -1,25 +1,26 @@
 {
-  "hooks": {
-    "before:init": ["npm run lint", "npm test"],
-    "after:bump": "npx auto-changelog -p --commit-limit false --ignore-commit-pattern '^((dev|chore|ci|docs|build|test):|Release|Update coverage|Fix.*badge|Remove dotenv)'",
-    "after:npm:bump": "npm pack && ls *.tgz",
-    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
-  },
   "git": {
-    "commitMessage": "Release ${version}",
-    "commitArgs": ["-S"],
-    "tagAnnotation": "Release ${version}",
-    "tagArgs": ["-s"],
-    "changelog": "npx auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci|docs|build|test):|Release|Update coverage|Fix.*badge|Remove dotenv)' --stdout -t https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
-  },
-  "npm": {
-    "publish": false
+    "commitMessage": "chore: release v${version}",
+    "requireCleanWorkingDir": true,
+    "requireBranch": "main",
+    "tag": true,
+    "tagName": "v${version}",
+    "push": true,
+    "changelog": "npx auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)' --stdout"
   },
   "github": {
     "release": true,
-    "repo": "wernerglinka/metalsmith-blog-lists",
-    "releaseName": "metalsmith-blog-lists ${version}",
-    "tokenRef": "GITHUB_TOKEN",
-    "assets": ["metalsmith-blog-lists-${version}.tgz"]
+    "releaseName": "v${version}",
+    "releaseNotes": null,
+    "web": false
+  },
+  "npm": {
+    "publish": false,
+    "publishPath": "."
+  },
+  "hooks": {
+    "before:init": ["git pull", "npm test", "npm run lint", "npm run format"],
+    "after:bump": "npx auto-changelog -p --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)' && git add CHANGELOG.md",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   }
 }

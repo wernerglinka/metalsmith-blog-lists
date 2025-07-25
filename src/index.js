@@ -1,7 +1,12 @@
 import { normalizeOptions } from './utils/config.js';
 import { getBlogProperty, getFilePath } from './utils/blogProperty.js';
 import { sortByDate, sortByOrder, sortByYear } from './utils/sorting.js';
-import { createPostObject, extractUniqueYears, createAnnualizedCollections, isInBlogDirectory } from './utils/collections.js';
+import {
+  createPostObject,
+  extractUniqueYears,
+  createAnnualizedCollections,
+  isInBlogDirectory
+} from './utils/collections.js';
 
 /**
  * A Metalsmith plugin to add various blog lists to metadata
@@ -15,15 +20,15 @@ import { createPostObject, extractUniqueYears, createAnnualizedCollections, isIn
  * @param {Options} options - Plugin options
  * @returns {import('metalsmith').Plugin} - Metalsmith plugin function
  */
-const plugin = ( options ) => {
-  options = normalizeOptions( options );
+const plugin = (options) => {
+  options = normalizeOptions(options);
 
   // Create the plugin function with arrow syntax
-  const metalsmithBlogLists = ( files, metalsmith, done ) => {
+  const metalsmithBlogLists = (files, metalsmith, done) => {
     // Get debug function from metalsmith
-    const debug = metalsmith.debug ? metalsmith.debug( 'metalsmith-blog-lists' ) : () => { };
+    const debug = metalsmith.debug ? metalsmith.debug('metalsmith-blog-lists') : () => {};
 
-    debug( 'Starting blog-lists plugin with options: %O', options );
+    debug('Starting blog-lists plugin with options: %O', options);
 
     // Initialize arrays to store different blog post collections
     const featuredBlogPosts = []; // Will hold posts marked as featured
@@ -33,64 +38,64 @@ const plugin = ( options ) => {
     let temp; // Temporary object for building post data
 
     // Process each file in the Metalsmith files object
-    Object.keys( files ).forEach( ( file ) => {
-      const thisFile = files[ file ];
+    Object.keys(files).forEach((file) => {
+      const thisFile = files[file];
 
-      if ( isInBlogDirectory( file, options ) ) {
+      if (isInBlogDirectory(file, options)) {
         // Get the file path for use in links, handling both permalink and non-permalink formats
-        const filePath = getFilePath( file, options );
+        const filePath = getFilePath(file, options);
 
         // Check if post is featured by looking for featuredBlogpost property
-        const isFeatured = getBlogProperty( thisFile, 'featuredBlogpost', null, options.blogObject );
+        const isFeatured = getBlogProperty(thisFile, 'featuredBlogpost', null, options.blogObject);
 
         // Create a standardized post object with essential metadata
-        temp = createPostObject( thisFile, filePath, options );
+        temp = createPostObject(thisFile, filePath, options);
 
         // Add to all blog posts collection
-        allSortedBlogPosts.push( temp );
+        allSortedBlogPosts.push(temp);
 
         // If post is marked as featured, add to featured posts collection
-        if ( isFeatured ) {
-          featuredBlogPosts.push( temp );
+        if (isFeatured) {
+          featuredBlogPosts.push(temp);
         }
       }
-    } );
+    });
 
     // Sort all blog posts by date (oldest to newest)
-    sortByDate( allSortedBlogPosts );
+    sortByDate(allSortedBlogPosts);
 
     // Sort featured posts by their order property (low to high)
-    sortByOrder( featuredBlogPosts );
+    sortByOrder(featuredBlogPosts);
 
     // Apply the featured post order setting (asc or desc)
     const sortOrder = options.featuredPostOrder;
 
-    debug( 'Using sort order from options: %s', sortOrder );
-    debug( 'Featured blog posts before final sort: %O', featuredBlogPosts );
+    debug('Using sort order from options: %s', sortOrder);
+    debug('Featured blog posts before final sort: %O', featuredBlogPosts);
 
     // Apply the featured post order setting (asc or desc)
-    if ( sortOrder === 'desc' ) {
+    if (sortOrder === 'desc') {
       // Default is descending order (high to low)
       featuredBlogPosts.reverse();
     }
     // For ascending order (asc), keep current sort (low to high = 1, 2, 3)
 
-    debug( 'Featured blog posts after sorting: %O', featuredBlogPosts );
+    debug('Featured blog posts after sorting: %O', featuredBlogPosts);
 
     // Limit featured posts to the specified quantity
-    featuredBlogPosts.splice( options.featuredQuantity );
+    featuredBlogPosts.splice(options.featuredQuantity);
 
     // Create the yearly archive list from allSortedBlogPosts
-    const uniqueYears = extractUniqueYears( allSortedBlogPosts );
-    const annualizedCollections = createAnnualizedCollections( allSortedBlogPosts, uniqueYears );
-    annualizedBlogPosts.push( ...annualizedCollections );
+    const uniqueYears = extractUniqueYears(allSortedBlogPosts);
+    const annualizedCollections = createAnnualizedCollections(allSortedBlogPosts, uniqueYears);
+    annualizedBlogPosts.push(...annualizedCollections);
 
     // Sort annualized posts by newest year first
-    sortByYear( annualizedBlogPosts );
+    sortByYear(annualizedBlogPosts);
 
     // Create latest blog posts array (most recent posts)
     // Reverse allSortedBlogPosts to get newest first, then take specified quantity
-    latestBlogPosts = allSortedBlogPosts.reverse().slice( 0, options.latestQuantity );
+    latestBlogPosts = allSortedBlogPosts.reverse().slice(0, options.latestQuantity);
 
     // Add all collections to metalsmith.metadata for global access in templates
     const metadata = metalsmith.metadata();
@@ -100,7 +105,7 @@ const plugin = ( options ) => {
     metadata.annualizedBlogPosts = annualizedBlogPosts;
 
     // Update metadata
-    metalsmith.metadata( metadata );
+    metalsmith.metadata(metadata);
 
     // Signal completion to Metalsmith
     done();
@@ -111,7 +116,7 @@ const plugin = ( options ) => {
 };
 
 // Set the function name for compatibility with tests
-Object.defineProperty( plugin, 'name', { value: 'initMetalsmithBlogLists' } );
+Object.defineProperty(plugin, 'name', { value: 'initMetalsmithBlogLists' });
 
 // Export the plugin
 export default plugin;
