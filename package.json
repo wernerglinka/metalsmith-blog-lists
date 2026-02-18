@@ -53,7 +53,6 @@
     "prettier": "^3.5.3",
     "release-it": "19.0.2"
   },
-  "dependencies": {},
   "peerDependencies": {
     "metalsmith": "^2.5.1"
   },
@@ -67,8 +66,10 @@
     "lint:check": "eslint --fix-dry-run .",
     "format-and-lint": "npm run format && npm run lint",
     "changelog": "auto-changelog -u --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release)'",
-    "release": "./node_modules/.bin/release-it .",
-    "release:check": "npm run lint:check && ./node_modules/.bin/release-it . --dry-run",
+    "release:patch": "GH_TOKEN=$(gh auth token) release-it patch --ci",
+    "release:minor": "GH_TOKEN=$(gh auth token) release-it minor --ci",
+    "release:major": "GH_TOKEN=$(gh auth token) release-it major --ci",
+    "release:check": "npm run lint:check && npm run build && release-it --dry-run",
     "test": "c8 --include=src/**/*.js mocha 'test/index.js' 'test/cjs.test.cjs' -t 15000",
     "test:coverage": "c8 npm test",
     "test:esm": "c8 --include=src/**/*.js mocha test/index.js -t 15000",

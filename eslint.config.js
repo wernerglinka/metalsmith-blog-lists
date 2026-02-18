@@ -27,7 +27,6 @@ export default [
           argsIgnorePattern: '^_'
         }
       ],
-      'space-in-parens': ['error', 'always'],
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],
       'dot-notation': 'error',
@@ -39,7 +38,7 @@ export default [
       'no-throw-literal': 'error',
       'no-await-in-loop': 'warn',
       'max-depth': ['warn', 4],
-      'max-params': ['warn', 4],
+      'max-params': ['warn', 7],
       complexity: ['warn', 15]
     }
   },

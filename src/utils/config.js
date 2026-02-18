@@ -30,13 +30,36 @@ export const defaults = {
 };
 
 /**
- * Normalize plugin options by merging with defaults and formatting paths
+ * Validate that a value is a positive integer
+ * @param {*} value - Value to validate
+ * @param {number} defaultValue - Default value if validation fails
+ * @returns {number} - Valid positive integer
+ */
+const ensurePositiveInteger = (value, defaultValue) => {
+  const num = Number(value);
+  if (Number.isInteger(num) && num > 0) {
+    return num;
+  }
+  return defaultValue;
+};
+
+/**
+ * Normalize plugin options by merging with defaults, validating, and formatting paths
  * @param {Options} [options] - User-provided options
  * @returns {Object} - Normalized options object
  */
 export const normalizeOptions = (options) => {
   // Start with defaults
   const result = { ...defaults, ...(options || {}) };
+
+  // Validate numeric options
+  result.latestQuantity = ensurePositiveInteger(result.latestQuantity, defaults.latestQuantity);
+  result.featuredQuantity = ensurePositiveInteger(result.featuredQuantity, defaults.featuredQuantity);
+
+  // Validate featuredPostOrder
+  if (result.featuredPostOrder !== 'asc' && result.featuredPostOrder !== 'desc') {
+    result.featuredPostOrder = defaults.featuredPostOrder;
+  }
 
   // Ensure blogDirectory has the correct format (starts with ./ and doesn't end with /)
   let dirPath = result.blogDirectory;

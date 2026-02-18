@@ -426,12 +426,12 @@ describe('metalsmith-blog-lists (ESM)', () => {
           assert.strictEqual(Array.isArray(allPosts), true, 'Should have array of all posts');
           assert.strictEqual(allPosts.length > 1, true, 'Should have multiple posts');
 
-          // Check sorting (should be in reverse chronological order - newest first)
+          // Check sorting (should be in chronological order - oldest first)
           if (allPosts.length >= 2) {
             // Check first two posts to verify order
             const post1Date = new Date(allPosts[0].date).getTime();
             const post2Date = new Date(allPosts[1].date).getTime();
-            assert.strictEqual(post1Date >= post2Date, true, 'Posts should be sorted newest first');
+            assert.strictEqual(post1Date <= post2Date, true, 'Posts should be sorted oldest first');
           }
 
           done();

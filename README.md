@@ -7,7 +7,7 @@ A metalsmith plugin to provide various blog lists
 [![license: ISC][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
 [![ESM/CommonJS][modules-badge]][npm-url]
-[![Known Vulnerabilities](https://snyk.io/test/npm/metalsmith-blog-listsn/badge.svg)](https://snyk.io/test/npm/metalsmith-blog-lists)
+[![Known Vulnerabilities](https://snyk.io/test/npm/metalsmith-blog-lists/badge.svg)](https://snyk.io/test/npm/metalsmith-blog-lists)
 
 ## Features
 
@@ -21,11 +21,12 @@ The plugin adds the following lists to the metadata to enable various blog widge
 The following properties must be defined in the frontmatter:
 
 ```yaml
-post: title
-  excerpt
-  date
-  author
-  image
+post:
+  title: "Post Title"
+  excerpt: "A brief description of the post"
+  date: "2024-01-15"
+  author: "Author Name"
+  image: "/images/post-image.jpg"
 ```
 
 `post` is the default name of the blog properties object. It may be changed by setting the `blogObject` option.
@@ -129,15 +130,19 @@ metalsmith.use(
 
 ## Options
 
-| Option            | Type    | Default | Description                                                                                                                                               |
-| ----------------- | ------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| latestQuantity    | Number  | 3       | The number of latest blog posts to display                                                                                                                |
-| featuredQuantity  | Number  | 3       | The number of featured blog posts to display                                                                                                              |
-| featuredPostOrder | String  | 'desc'  | The order in which featured blog posts are displayed: "asc" or "desc"                                                                                     |
-| fileExtension     | String  | '.md'   | The file extension of blog posts                                                                                                                          |
-| blogDirectory     | String  | ./blog  | The path relative to the Metalsmith source directory containing the blog posts                                                                            |
-| blogObject        | String  | 'post'  | The name of the blog object in frontmatter for nested properties (e.g., "post" for thisFile.post.title)                                                   |
-| usePermalinks     | Boolean | true    | When true, file paths will have extensions removed (e.g., '/blog/post'). When false, .md extensions will be replaced with .html (e.g., '/blog/post.html') |
+| Option            | Type    | Default  | Description                                                                                                                                               |
+| ----------------- | ------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| latestQuantity    | Number  | 3        | The number of latest blog posts to display                                                                                                                |
+| featuredQuantity  | Number  | 3        | The number of featured blog posts to display                                                                                                              |
+| featuredPostOrder | String  | 'desc'   | The order in which featured blog posts are displayed: "asc" or "desc"                                                                                     |
+| fileExtension     | String  | '.md'    | The file extension of blog posts                                                                                                                          |
+| blogDirectory     | String  | './blog' | The path relative to the Metalsmith source directory containing the blog posts (e.g., "./blog", "./content/blog")                                         |
+| blogObject        | String  | 'post'   | The name of the blog object in frontmatter for nested properties (e.g., "post" for thisFile.post.title)                                                   |
+| usePermalinks     | Boolean | true     | When true, file paths will have extensions removed (e.g., '/blog/post'). When false, .md extensions will be replaced with .html (e.g., '/blog/post.html') |
+
+> **Note:** The `blogDirectory` option supports both root-level blogs (`"./blog"`) and subdirectory blogs (`"./content/blog"`). Always include the relative path prefix `./`.
+
+> **Note:** The `blogObject` option lets you work with nested blog properties in your frontmatter. When set to a non-empty string (e.g., `"blog"`), the plugin will look for properties inside that object (e.g., `thisFile.blog.title`). If not found or if `blogObject` is empty, it falls back to direct properties (e.g., `thisFile.title`).
 
 ## Examples
 
@@ -174,24 +179,6 @@ _Using a Nunjucks template_
 </ul>
 ```
 
-### Options
-
-You can pass options to metalsmith-blog-lists with the Javascript API or CLI:
-
-| Option                | Description                                                                                                           | Default    | Required |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
-| **latestQuantity**    | The number of blogposts to display in the latest posts list                                                           | `3`        | No       |
-| **featuredQuantity**  | The number of featured blogposts to display                                                                           | `3`        | No       |
-| **featuredPostOrder** | The order in which featured blogposts are displayed: `"asc"` or `"desc"`                                              | `"desc"`   | No       |
-| **fileExtension**     | The blogpost file extension                                                                                           | `".md"`    | No       |
-| **blogDirectory**     | The path relative to the Metalsmith source directory containing the blog posts (e.g., `"./blog"`, `"./content/blog"`) | `"./blog"` | No       |
-| **blogObject**        | The name of the blog object in frontmatter for nested properties (e.g., `"blog"` for `thisFile.blog.title`)           | `""`       | No       |
-| **debugEnabled**      | Enable detailed debug logging                                                                                         | `false`    | No       |
-
-> **Note:** The `blogDirectory` option now supports both root-level blogs (`"./blog"`) and subdirectory blogs (`"./content/blog"`). You should always include the relative path prefix `./`.
-
-> **Note:** The `blogObject` option lets you work with nested blog properties in your frontmatter. When set to a non-empty string (e.g., `"blog"`), the plugin will look for properties inside that object (e.g., `thisFile.blog.title`). If not found or if `blogObject` is empty, it falls back to direct properties (e.g., `thisFile.title`).
-
 ## Debug
 
 To enable debug logs, set the `DEBUG` environment variable to `metalsmith-blog-lists`:
@@ -208,7 +195,7 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 {
   "plugins": [
     {
-      "@metalsmith/metalsmith-blog-lists": {
+      "metalsmith-blog-lists": {
         "latestQuantity": 4,
         "featuredQuantity": 2,
         "featuredPostOrder": "desc",
