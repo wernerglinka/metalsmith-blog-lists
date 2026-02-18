@@ -22,11 +22,11 @@ The following properties must be defined in the frontmatter:
 
 ```yaml
 post:
-  title: "Post Title"
-  excerpt: "A brief description of the post"
-  date: "2024-01-15"
-  author: "Author Name"
-  image: "/images/post-image.jpg"
+  title: 'Post Title'
+  excerpt: 'A brief description of the post'
+  date: '2024-01-15'
+  author: 'Author Name'
+  image: '/images/post-image.jpg'
 ```
 
 `post` is the default name of the blog properties object. It may be changed by setting the `blogObject` option.
