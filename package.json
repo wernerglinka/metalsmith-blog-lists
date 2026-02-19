@@ -1,6 +1,6 @@
 {
   "name": "metalsmith-blog-lists",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A Metalsmith plugin to add blog lists to metadata.",
   "keywords": [
     "metalsmith-blog-lists",
