@@ -1,9 +1,10 @@
 // ESM test file for Metalsmith plugins
+import { describe, it } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
-import metalsmith from 'metalsmith';
+import Metalsmith from 'metalsmith';
 
 // Import the plugin from src for direct coverage
 import plugin from '../src/index.js';
@@ -24,54 +25,44 @@ describe('metalsmith-blog-lists (ESM)', () => {
 
     // Run with empty files and metadata to see if defaults are properly applied
     const files = {};
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
-    instance(files, metalsmithMock, () => {});
+    instance(files, ms, () => {});
 
     // Check the defaults are applied
     assert.strictEqual(
-      Object.prototype.hasOwnProperty.call(metadata, 'latestBlogPosts'),
+      Object.hasOwn(ms.metadata(), 'latestBlogPosts'),
       true,
       'Should have latestBlogPosts in metadata'
     );
     assert.strictEqual(
-      Object.prototype.hasOwnProperty.call(metadata, 'featuredBlogPosts'),
+      Object.hasOwn(ms.metadata(), 'featuredBlogPosts'),
       true,
       'Should have featuredBlogPosts in metadata'
     );
     assert.strictEqual(
-      Object.prototype.hasOwnProperty.call(metadata, 'allSortedBlogPosts'),
+      Object.hasOwn(ms.metadata(), 'allSortedBlogPosts'),
       true,
       'Should have allSortedBlogPosts in metadata'
     );
     assert.strictEqual(
-      Object.prototype.hasOwnProperty.call(metadata, 'annualizedBlogPosts'),
+      Object.hasOwn(ms.metadata(), 'annualizedBlogPosts'),
       true,
       'Should have annualizedBlogPosts in metadata'
     );
   });
 
   // Test option normalization
-  it('should properly normalize blogDirectory path format', (done) => {
+  it('should properly normalize blogDirectory path format', (_t, done) => {
     // Test with directory path without ./ prefix
     const instance1 = plugin({ blogDirectory: 'articles' });
     const files1 = { 'articles/post1.md': { date: '2022-01-01', title: 'Test' } };
-    const metadata1 = {};
-    const metalsmithMock1 = {
-      metadata: function () {
-        return metadata1;
-      }
-    };
+    const ms1 = Metalsmith(fixture('default'));
 
-    instance1(files1, metalsmithMock1, () => {
+    instance1(files1, ms1, () => {
       // Should normalize path and find the post
       assert.strictEqual(
-        metadata1.allSortedBlogPosts.length > 0,
+        ms1.metadata().allSortedBlogPosts.length > 0,
         true,
         'Should find post with normalized directory path'
       );
@@ -79,16 +70,11 @@ describe('metalsmith-blog-lists (ESM)', () => {
       // Test with trailing slash
       const instance2 = plugin({ blogDirectory: './posts/' });
       const files2 = { 'posts/post1.md': { date: '2022-01-01', title: 'Test' } };
-      const metadata2 = {};
-      const metalsmithMock2 = {
-        metadata: function () {
-          return metadata2;
-        }
-      };
+      const ms2 = Metalsmith(fixture('default'));
 
-      instance2(files2, metalsmithMock2, () => {
+      instance2(files2, ms2, () => {
         assert.strictEqual(
-          metadata2.allSortedBlogPosts.length > 0,
+          ms2.metadata().allSortedBlogPosts.length > 0,
           true,
           'Should find post when blog directory has trailing slash'
         );
@@ -105,8 +91,8 @@ describe('metalsmith-blog-lists (ESM)', () => {
     assert.strictEqual(plugin().name, camelCased.replace(/~/g, ''));
   });
 
-  it('should not crash the metalsmith build when using default options', (done) => {
-    metalsmith(fixture('default'))
+  it('should not crash the metalsmith build when using default options', (_t, done) => {
+    Metalsmith(fixture('default'))
       .use(plugin())
       .build((err) => {
         if (err) {
@@ -117,10 +103,8 @@ describe('metalsmith-blog-lists (ESM)', () => {
       });
   });
 
-  it('should place a latest blogs array with 4 entries into metadata', function (done) {
-    this.timeout(5000); // Moderate timeout increase
-
-    const ms = metalsmith(fixture('latestBlogsList'));
+  it('should place a latest blogs array with 4 entries into metadata', (_t, done) => {
+    const ms = Metalsmith(fixture('latestBlogsList'));
 
     // Force clean the build directory to start fresh
     if (ms.clean) {
@@ -136,7 +120,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
           blogDirectory: './blog'
         })
       )
-      .use((files, metalsmith, done) => {
+      .use((_files, metalsmith, done) => {
         // Directly check the metadata instead of relying on the template
         const metadata = metalsmith.metadata();
         const latestPosts = metadata.latestBlogPosts;
@@ -159,10 +143,8 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
   });
 
-  it('should place a featured blogs array with 3 entries in "desc" order into metadata', function (done) {
-    this.timeout(5000); // Moderate timeout increase
-
-    const ms = metalsmith(fixture('featuredBlogList-desc'));
+  it('should place a featured blogs array with 3 entries in "desc" order into metadata', (_t, done) => {
+    const ms = Metalsmith(fixture('featuredBlogList-desc'));
 
     // Force clean the build directory to start fresh
     if (ms.clean) {
@@ -179,7 +161,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
           blogDirectory: './blog'
         })
       )
-      .use((files, metalsmith, done) => {
+      .use((_files, metalsmith, done) => {
         // Directly check the metadata instead of relying on the template
         const metadata = metalsmith.metadata();
         const featuredPosts = metadata.featuredBlogPosts;
@@ -209,14 +191,12 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
   });
 
-  it('should place a featured blogs array with 3 entries in "desc" order into metadata (additional test)', function (done) {
-    this.timeout(5000); // Moderate timeout increase
-
+  it('should place a featured blogs array with 3 entries in "desc" order into metadata (additional test)', (_t, done) => {
     // Let's directly compare the output instead of trying to do string comparison,
     // as string formatting can differ but the actual content is what matters.
     // Read the file but we'll use direct metadata checks rather than parsing
 
-    const ms = metalsmith(fixture('featuredBlogList-asc'));
+    const ms = Metalsmith(fixture('featuredBlogList-asc'));
 
     // Force clean the build directory to start fresh
     if (ms.clean) {
@@ -233,7 +213,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
           blogDirectory: './blog'
         })
       )
-      .use((files, metalsmith, done) => {
+      .use((_files, metalsmith, done) => {
         // Directly check the metadata instead of relying on the template
         const metadata = metalsmith.metadata();
         const featuredPosts = metadata.featuredBlogPosts;
@@ -257,7 +237,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
   });
 
-  it('should handle debug option being enabled', (done) => {
+  it('should handle debug option being enabled', (_t, done) => {
     // Create mock files with minimal required properties
     const files = {
       './blog/test-post1.html': {
@@ -276,13 +256,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin with debug enabled
     const pluginInstance = plugin({
@@ -291,20 +265,20 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Check if it processed correctly with debug enabled
-      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
-      assert.strictEqual(metadata.featuredBlogPosts[0].order, 2, 'First post should have order 2 (desc sort)');
-      assert.strictEqual(metadata.featuredBlogPosts[1].order, 1, 'Second post should have order 1 (desc sort)');
+      assert.strictEqual(ms.metadata().featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(ms.metadata().featuredBlogPosts[0].order, 2, 'First post should have order 2 (desc sort)');
+      assert.strictEqual(ms.metadata().featuredBlogPosts[1].order, 1, 'Second post should have order 1 (desc sort)');
       done();
     });
   });
 
-  it('should handle blog posts with no featuredBlogpostOrder', (done) => {
+  it('should handle blog posts with no featuredBlogpostOrder', (_t, done) => {
     // Create mock files with one post missing the order
     const files = {
       './blog/test-post1.html': {
@@ -323,13 +297,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin
     const pluginInstance = plugin({
@@ -337,22 +305,20 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Check if it handled missing order property gracefully
-      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(ms.metadata().featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
       // The post with undefined order should sort correctly (undefined is treated as 0)
       done();
     });
   });
 
-  it('should place an annualized array of all blogs into metadata', function (done) {
-    this.timeout(5000); // Moderate timeout increase
-
-    const ms = metalsmith(fixture('annualBlogList'));
+  it('should place an annualized array of all blogs into metadata', (_t, done) => {
+    const ms = Metalsmith(fixture('annualBlogList'));
 
     // Force clean the build directory to start fresh
     if (ms.clean) {
@@ -367,7 +333,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
           blogDirectory: './blog'
         })
       )
-      .use((files, metalsmith, done) => {
+      .use((_files, metalsmith, done) => {
         // Directly check the metadata instead of relying on the template
         const metadata = metalsmith.metadata();
         const annualPosts = metadata.annualizedBlogPosts;
@@ -398,10 +364,8 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
   });
 
-  it('should place a sorted array of all blogs into metadata', function (done) {
-    this.timeout(5000); // Moderate timeout increase
-
-    const ms = metalsmith(fixture('allBlogsList'));
+  it('should place a sorted array of all blogs into metadata', (_t, done) => {
+    const ms = Metalsmith(fixture('allBlogsList'));
 
     // Force clean the build directory to start fresh
     if (ms.clean) {
@@ -416,7 +380,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
           blogDirectory: './blog'
         })
       )
-      .use((files, metalsmith, done) => {
+      .use((_files, metalsmith, done) => {
         // Directly check the metadata instead of relying on the template
         const metadata = metalsmith.metadata();
         const allPosts = metadata.allSortedBlogPosts;
@@ -450,7 +414,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
   });
 
   // Test the new blogDirectory option
-  it('should support new blogDirectory option', (done) => {
+  it('should support new blogDirectory option', (_t, done) => {
     // Create mock files with explicit blogDirectory
     const files = {
       'articles/test-post1.html': {
@@ -469,13 +433,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin with the new blogDirectory option
     const pluginInstance = plugin({
@@ -483,20 +441,20 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Should find posts in the articles directory
-      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
-      assert.strictEqual(metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts in allSortedBlogPosts');
+      assert.strictEqual(ms.metadata().featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(ms.metadata().allSortedBlogPosts.length, 2, 'Should have 2 blog posts in allSortedBlogPosts');
       done();
     });
   });
 
   // Test the blogObject option for nested frontmatter properties
-  it('should support blogObject option for nested frontmatter properties', (done) => {
+  it('should support blogObject option for nested frontmatter properties', (_t, done) => {
     // Create mock files with blog object containing nested properties
     const files = {
       'blog/test-post1.html': {
@@ -532,13 +490,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin with the blogObject option
     const pluginInstance = plugin({
@@ -546,17 +498,17 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Should find all posts regardless of property structure
-      assert.strictEqual(metadata.featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
-      assert.strictEqual(metadata.allSortedBlogPosts.length, 3, 'Should have 3 blog posts in allSortedBlogPosts');
+      assert.strictEqual(ms.metadata().featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
+      assert.strictEqual(ms.metadata().allSortedBlogPosts.length, 3, 'Should have 3 blog posts in allSortedBlogPosts');
 
       // Verify that nested properties are used correctly
-      const sortedByDate = [...metadata.allSortedBlogPosts].sort((a, b) => a.date - b.date);
+      const sortedByDate = [...ms.metadata().allSortedBlogPosts].sort((a, b) => a.date - b.date);
 
       // First post should use the nested blog.title value
       assert.strictEqual(sortedByDate[0].title, 'Nested Blog Title 1', 'Should use nested blog.title');
@@ -578,7 +530,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
   });
 
   // Test featuredPostOrder option
-  it('should respect featuredPostOrder setting', (done) => {
+  it('should respect featuredPostOrder setting', (_t, done) => {
     // Create mock files with order
     const files = {
       './blog/test-post1.html': {
@@ -604,13 +556,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin with ascending order setting
     const pluginInstance = plugin({
@@ -618,22 +564,22 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Should be sorted in ascending order (1, 2, 3)
-      assert.strictEqual(metadata.featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
-      assert.strictEqual(metadata.featuredBlogPosts[0].order, 1, 'First post should have order 1');
-      assert.strictEqual(metadata.featuredBlogPosts[1].order, 2, 'Second post should have order 2');
-      assert.strictEqual(metadata.featuredBlogPosts[2].order, 3, 'Third post should have order 3');
+      assert.strictEqual(ms.metadata().featuredBlogPosts.length, 3, 'Should have 3 featured blog posts');
+      assert.strictEqual(ms.metadata().featuredBlogPosts[0].order, 1, 'First post should have order 1');
+      assert.strictEqual(ms.metadata().featuredBlogPosts[1].order, 2, 'Second post should have order 2');
+      assert.strictEqual(ms.metadata().featuredBlogPosts[2].order, 3, 'Third post should have order 3');
       done();
     });
   });
 
   // Test custom featuredQuantity option
-  it('should respect featuredQuantity option', (done) => {
+  it('should respect featuredQuantity option', (_t, done) => {
     // Create mock files
     const files = {
       './blog/test-post1.html': {
@@ -673,13 +619,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin with custom featuredQuantity
     const pluginInstance = plugin({
@@ -688,20 +628,24 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Should only have 2 featured posts due to featuredQuantity: 2
-      assert.strictEqual(metadata.featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
-      assert.strictEqual(metadata.allSortedBlogPosts.length, 5, 'Should have all 5 blog posts in allSortedBlogPosts');
+      assert.strictEqual(ms.metadata().featuredBlogPosts.length, 2, 'Should have 2 featured blog posts');
+      assert.strictEqual(
+        ms.metadata().allSortedBlogPosts.length,
+        5,
+        'Should have all 5 blog posts in allSortedBlogPosts'
+      );
       done();
     });
   });
 
   // Test usePermalinks option (default = true)
-  it('should use permalink-style URLs by default (without file extensions)', (done) => {
+  it('should use permalink-style URLs by default (without file extensions)', (_t, done) => {
     // Create mock files
     const files = {
       './blog/test-post1.md': {
@@ -716,28 +660,22 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin with default options (usePermalinks = true)
     const pluginInstance = plugin();
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Check that paths don't have file extensions
-      assert.strictEqual(metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
+      assert.strictEqual(ms.metadata().allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
 
       // Verify paths don't have .md or .html extensions
-      metadata.allSortedBlogPosts.forEach((post) => {
+      ms.metadata().allSortedBlogPosts.forEach((post) => {
         assert.strictEqual(post.path.endsWith('.md'), false, 'Path should not end with .md');
         assert.strictEqual(post.path.endsWith('.html'), false, 'Path should not end with .html');
       });
@@ -747,7 +685,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
   });
 
   // Test usePermalinks option set to false
-  it('should use non-permalink URLs (with .html extensions) when usePermalinks is false', (done) => {
+  it('should use non-permalink URLs (with .html extensions) when usePermalinks is false', (_t, done) => {
     // Create mock files
     const files = {
       './blog/test-post1.md': {
@@ -762,13 +700,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Create plugin with usePermalinks = false
     const pluginInstance = plugin({
@@ -776,16 +708,16 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Check that paths have .html extensions
-      assert.strictEqual(metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
+      assert.strictEqual(ms.metadata().allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
 
       // Verify paths have .html extensions
-      metadata.allSortedBlogPosts.forEach((post) => {
+      ms.metadata().allSortedBlogPosts.forEach((post) => {
         assert.strictEqual(post.path.endsWith('.html'), true, 'Path should end with .html');
         assert.strictEqual(post.path.endsWith('.md'), false, 'Path should not end with .md');
       });
@@ -795,7 +727,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
   });
 
   // Test usePermalinks with different file extensions
-  it('should handle usePermalinks with custom fileExtension', (done) => {
+  it('should handle usePermalinks with custom fileExtension', (_t, done) => {
     // Create mock files with .njk extension
     const files = {
       './blog/test-post1.njk': {
@@ -810,13 +742,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Test with usePermalinks = false and custom fileExtension
     const pluginInstance = plugin({
@@ -825,16 +751,16 @@ describe('metalsmith-blog-lists (ESM)', () => {
     });
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Check that paths have .html extensions (replacing .njk)
-      assert.strictEqual(metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
+      assert.strictEqual(ms.metadata().allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
 
       // Verify paths have .html extensions and not .njk
-      metadata.allSortedBlogPosts.forEach((post) => {
+      ms.metadata().allSortedBlogPosts.forEach((post) => {
         assert.strictEqual(post.path.endsWith('.html'), true, 'Path should end with .html');
         assert.strictEqual(post.path.endsWith('.njk'), false, 'Path should not end with .njk');
       });
@@ -844,7 +770,7 @@ describe('metalsmith-blog-lists (ESM)', () => {
   });
 
   // Test usePermalinks with index files
-  it('should handle index files correctly with usePermalinks', (done) => {
+  it('should handle index files correctly with usePermalinks', (_t, done) => {
     // Create mock files including index files
     const files = {
       './blog/post1/index.md': {
@@ -859,28 +785,22 @@ describe('metalsmith-blog-lists (ESM)', () => {
       }
     };
 
-    // Mock metalsmith instance
-    const metadata = {};
-    const metalsmithMock = {
-      metadata: function () {
-        return metadata;
-      }
-    };
+    const ms = Metalsmith(fixture('default'));
 
     // Test with usePermalinks = true (default)
     const pluginInstance = plugin();
 
     // Run plugin on mock data
-    pluginInstance(files, metalsmithMock, (err) => {
+    pluginInstance(files, ms, (err) => {
       if (err) {
         return done(err);
       }
 
       // Check that we have the posts
-      assert.strictEqual(metadata.allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
+      assert.strictEqual(ms.metadata().allSortedBlogPosts.length, 2, 'Should have 2 blog posts');
 
       // Verify paths don't end with '/index'
-      metadata.allSortedBlogPosts.forEach((post) => {
+      ms.metadata().allSortedBlogPosts.forEach((post) => {
         assert.strictEqual(post.path.endsWith('/index'), false, 'Path should not end with /index');
         // Should end with the directory name instead
         assert.ok(
@@ -899,7 +819,5 @@ describe('metalsmith-blog-lists (ESM)', () => {
       assert.strictEqual(typeof plugin, 'function', 'Plugin should be a function when imported with ESM');
       assert.strictEqual(typeof plugin(), 'function', 'Plugin should return a function when called');
     });
-
-    // Note: CommonJS test is handled separately in test/cjs-test/cjs-import.cjs
   });
 });

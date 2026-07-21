@@ -6,7 +6,9 @@ A metalsmith plugin to provide various blog lists
 [![npm: version][npm-badge]][npm-url]
 [![license: ISC][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
-[![ESM/CommonJS][modules-badge]][npm-url]
+[![ESM][modules-badge]][npm-url]
+
+This package is **ESM-only** and requires Node >= 22. CommonJS projects on Node 22 can still consume it with `require('metalsmith-blog-lists')` thanks to Node's `require(esm)` support.
 
 ## Features
 
@@ -93,27 +95,8 @@ featuredBlogpostOrder: <integer>
 
 Pass `metalsmith-blog-lists` to `metalsmith.use` :
 
-### ESM (ES Modules)
-
 ```js
 import blogLists from 'metalsmith-blog-lists';
-
-metalsmith.use(
-  blogLists({
-    latestQuantity: 4,
-    featuredQuantity: 2,
-    featuredPostOrder: 'desc',
-    fileExtension: '.md',
-    blogDirectory: './blog',
-    blogObject: '' // For nested blog properties (e.g., thisFile.blog.title), use "blog"
-  })
-);
-```
-
-### CommonJS
-
-```js
-const blogLists = require('metalsmith-blog-lists');
 
 metalsmith.use(
   blogLists({
@@ -209,7 +192,7 @@ To use this plugin with the Metalsmith CLI, add `metalsmith-blog-lists` to the `
 
 ## Test Coverage
 
-This project maintains high statement and line coverage for the source code. Coverage is verified during the release process using the c8 coverage tool.
+This project maintains high statement and line coverage for the source code. Coverage is measured with Node's native test runner (`node --test --experimental-test-coverage`).
 
 ## Author
 
@@ -227,4 +210,4 @@ This project maintains high statement and line coverage for the source code. Cov
 [license-url]: LICENSE
 [coverage-badge]: https://img.shields.io/badge/test%20coverage-100.0%25-brightgreen
 [coverage-url]: #test-coverage
-[modules-badge]: https://img.shields.io/badge/modules-ESM%2FCJS-blue
+[modules-badge]: https://img.shields.io/badge/module-ESM-blue

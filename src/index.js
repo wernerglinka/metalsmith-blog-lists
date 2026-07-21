@@ -26,7 +26,7 @@ const plugin = (options) => {
   // Create the plugin function with arrow syntax
   const metalsmithBlogLists = (files, metalsmith, done) => {
     // Get debug function from metalsmith
-    const debug = metalsmith.debug ? metalsmith.debug('metalsmith-blog-lists') : () => {};
+    const debug = metalsmith.debug('metalsmith-blog-lists');
 
     debug('Starting blog-lists plugin with options: %O', options);
 
