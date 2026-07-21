@@ -7,7 +7,6 @@ A metalsmith plugin to provide various blog lists
 [![license: ISC][license-badge]][license-url]
 [![coverage][coverage-badge]][coverage-url]
 [![ESM/CommonJS][modules-badge]][npm-url]
-[![Known Vulnerabilities](https://snyk.io/test/npm/metalsmith-blog-lists/badge.svg)](https://snyk.io/test/npm/metalsmith-blog-lists)
 
 ## Features
 
